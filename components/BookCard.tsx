@@ -112,7 +112,7 @@ export function BookCard({
                     numberOfLines={1}
                 >
                     {book.authors?.map((author) => author.name).join(", ") ||
-                        "Unknown Author"}
+                        "Unknown"}
                 </Text>
 
                 {getRating() > 0 && (
@@ -336,21 +336,6 @@ export function BookCard({
                     style={styles.image}
                     resizeMode="cover"
                 />
-                <View style={styles.imageOverlay}>
-                    <View
-                        style={[
-                            styles.stockIndicator,
-                            {
-                                backgroundColor:
-                                    book.stockQuantity > 5
-                                        ? theme.colors.success
-                                        : book.stockQuantity > 0
-                                        ? theme.colors.warning
-                                        : theme.colors.error,
-                            },
-                        ]}
-                    />
-                </View>
             </View>
 
             <View style={styles.content}>

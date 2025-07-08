@@ -238,36 +238,6 @@ export default function BookDetailScreen() {
                             style={styles.bookImage}
                             resizeMode="cover"
                         />
-                        <View
-                            style={[
-                                styles.stockBadge,
-                                {
-                                    backgroundColor:
-                                        book.stockQuantity > 5
-                                            ? theme.colors.success
-                                            : book.stockQuantity > 0
-                                            ? theme.colors.warning
-                                            : theme.colors.error,
-                                },
-                            ]}
-                        >
-                            <Text
-                                style={[
-                                    styles.stockBadgeText,
-                                    {
-                                        color: theme.colors.white,
-                                        fontFamily:
-                                            theme.typography.fontFamily.bold,
-                                    },
-                                ]}
-                            >
-                                {book.stockQuantity > 5
-                                    ? "In Stock"
-                                    : book.stockQuantity > 0
-                                    ? `${book.stockQuantity} Left`
-                                    : "Out of Stock"}
-                            </Text>
-                        </View>
                     </View>
 
                     <View style={styles.heroContent}>
@@ -297,7 +267,7 @@ export default function BookDetailScreen() {
                             by{" "}
                             {book.authors
                                 .map((author) => author.name)
-                                .join(", ")}
+                                .join(", ") || "an unknown author"}
                         </Text>
 
                         {/* Rating */}
@@ -334,10 +304,61 @@ export default function BookDetailScreen() {
                             </View>
                         )}
 
-                        {/* Genres */}
-                        {book.genres && (
-                            <View style={styles.genresContainer}>
-                                {book.genres.map((genre, index) => (
+                        {/* Genres and Stock Status */}
+                        <View style={styles.genresContainer}>
+                            {/* Stock Status Tag */}
+                            <View
+                                style={[
+                                    styles.genreTag,
+                                    styles.stockTag,
+                                    {
+                                        backgroundColor:
+                                            book.stockQuantity > 5
+                                                ? theme.colors.success
+                                                : book.stockQuantity > 0
+                                                ? theme.colors.warning
+                                                : theme.colors.error,
+                                    },
+                                    {
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        gap: 8,
+                                    },
+                                ]}
+                            >
+                                <Ionicons
+                                    name={
+                                        book.stockQuantity > 5
+                                            ? "checkmark-circle"
+                                            : book.stockQuantity > 0
+                                            ? "alert-circle"
+                                            : "close-circle"
+                                    }
+                                    size={16}
+                                    color={theme.colors.white}
+                                />
+                                <Text
+                                    style={[
+                                        styles.genreTagText,
+                                        {
+                                            color: theme.colors.white,
+                                            fontFamily:
+                                                theme.typography.fontFamily
+                                                    .bold,
+                                        },
+                                    ]}
+                                >
+                                    {book.stockQuantity > 5
+                                        ? "In Stock"
+                                        : book.stockQuantity > 0
+                                        ? `${book.stockQuantity} Left`
+                                        : "Out of Stock"}
+                                </Text>
+                            </View>
+
+                            {/* Genre Tags */}
+                            {book.genres &&
+                                book.genres.map((genre, index) => (
                                     <View
                                         key={genre.id || index}
                                         style={[
@@ -365,8 +386,7 @@ export default function BookDetailScreen() {
                                         </Text>
                                     </View>
                                 ))}
-                            </View>
-                        )}
+                        </View>
                     </View>
                 </View>
 
@@ -748,6 +768,9 @@ const styles = StyleSheet.create({
         fontSize: 12,
         textTransform: "uppercase",
         letterSpacing: 0.5,
+    },
+    stockTag: {
+        marginRight: 8,
     },
     section: {
         paddingHorizontal: 20,
