@@ -149,6 +149,7 @@
     "notFound": "Libro no encontrado",
     "by": "por",
     "unknownAuthor": "un autor desconocido",
+    "unknownDescription": "No sabemos nada sobre este libro..",
     "sections": {
       "aboutBook": "Sobre este libro",
       "details": "Detalles"

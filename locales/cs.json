@@ -149,6 +149,7 @@
     "notFound": "Kniha nenalezena",
     "by": "od",
     "unknownAuthor": "neznámý autor",
+    "unknownDescription": "O této knize nic nevíme...",
     "sections": {
       "aboutBook": "O této knize",
       "details": "Podrobnosti"

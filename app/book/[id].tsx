@@ -235,11 +235,19 @@ export default function BookDetailScreen() {
                     ]}
                 >
                     <View style={styles.bookImageContainer}>
-                        <Image
-                            source={{ uri: book?.imageURL }}
-                            style={styles.bookImage}
-                            resizeMode="cover"
-                        />
+                        {book.imageURL && book.imageURL.length > 0 ? (
+                            <Image
+                                source={{ uri: book.imageURL }}
+                                style={styles.bookImage}
+                                resizeMode="cover"
+                            />
+                        ) : (
+                            <View style={styles.bookImagePlaceholder}>
+                                <Text style={styles.bookImagePlaceholderText}>
+                                    ?
+                                </Text>
+                            </View>
+                        )}
                     </View>
 
                     <View style={styles.heroContent}>
@@ -416,12 +424,14 @@ export default function BookDetailScreen() {
                         style={[
                             styles.description,
                             {
-                                color: theme.colors.textSecondary,
+                                color: book.description
+                                    ? theme.colors.textSecondary
+                                    : theme.colors.textLight,
                                 fontFamily: theme.typography.fontFamily.regular,
                             },
                         ]}
                     >
-                        {book.description}
+                        {book.description || t("book.unknownDescription")}
                     </Text>
                 </View>
 
@@ -664,7 +674,7 @@ export default function BookDetailScreen() {
                             disabled={book.stockQuantity === 0}
                         >
                             <Ionicons
-                                name="bag-add"
+                                name={book.stockQuantity > 0 ? "cart" : "close"}
                                 size={24}
                                 color={theme.colors.white}
                             />
@@ -678,7 +688,9 @@ export default function BookDetailScreen() {
                                     },
                                 ]}
                             >
-                                {t("book.addToCart")}
+                                {book.stockQuantity > 0
+                                    ? t("book.addToCart")
+                                    : t("book.outOfStock")}
                             </Text>
                         </TouchableOpacity>
                     )}
@@ -719,6 +731,19 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.5,
         height: screenWidth * 0.75,
         borderRadius: 16,
+    },
+    bookImagePlaceholder: {
+        width: screenWidth * 0.5,
+        height: screenWidth * 0.75,
+        borderRadius: 16,
+        backgroundColor: theme.colors.backgroundSecondary,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    bookImagePlaceholderText: {
+        fontSize: 128,
+        textAlign: "center",
+        color: theme.colors.textLight,
     },
     stockBadge: {
         position: "absolute",
