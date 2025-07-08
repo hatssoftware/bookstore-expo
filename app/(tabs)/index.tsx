@@ -1,18 +1,6 @@
-import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
-import {
-    FlatList,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
-import { BookCard } from "../../components/BookCard";
-import { SearchBar } from "../../components/SearchBar";
-import { useAppTheme } from "../../contexts/ThemeContext";
+import { BookCard } from "@/components/BookCard";
+import { SearchBar } from "@/components/SearchBar";
+import { useAppTheme } from "@/contexts/ThemeContext";
 import {
     useAddToFavorites,
     useFavorites,
@@ -21,12 +9,26 @@ import {
     useSearchBooks,
     useSession,
     useTopBooks,
-} from "../../hooks/useApi";
+} from "@/hooks/useApi";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import React, { useState } from "react";
+import {
+    FlatList,
+    Image,
+    SafeAreaView,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 
 export default function HomeScreen() {
     const theme = useAppTheme();
     const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState([]);
+    const [searchResults, setSearchResults] = useState<any[]>([]);
 
     // API hooks
     const { data: session } = useSession();
@@ -43,12 +45,19 @@ export default function HomeScreen() {
 
     const handleSearch = (query: string) => {
         setSearchQuery(query);
-        if (query.trim()) {
-            setSearchResults(searchData?.books || []);
-        } else {
+        if (!query.trim()) {
             setSearchResults([]);
         }
     };
+
+    // Update search results when search data changes
+    React.useEffect(() => {
+        if (searchQuery.trim() && searchData) {
+            setSearchResults(searchData);
+        } else if (!searchQuery.trim()) {
+            setSearchResults([]);
+        }
+    }, [searchData, searchQuery]);
 
     const handleFavoriteToggle = (bookId: string) => {
         if (!session?.user?.id) return;
@@ -233,32 +242,78 @@ export default function HomeScreen() {
 
         return (
             <View style={styles.section}>
-                <Text
-                    style={[
-                        styles.sectionTitle,
-                        {
-                            color: theme.colors.text,
-                            fontFamily: theme.typography.fontFamily.bold,
-                        },
-                    ]}
-                >
-                    Search Results
-                </Text>
+                <View style={styles.sectionHeader}>
+                    <Text
+                        style={[
+                            styles.sectionTitle,
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.bold,
+                                marginTop: -16,
+                            },
+                        ]}
+                    >
+                        Search Results
+                    </Text>
+                </View>
                 <FlatList
                     data={searchResults}
                     renderItem={({ item }) => (
-                        <BookCard
-                            book={item}
-                            variant="compact"
-                            onFavoritePress={() =>
-                                handleFavoriteToggle(item.id)
-                            }
-                            isFavorite={isFavorite(item.id)}
-                        />
+                        <TouchableOpacity
+                            style={[
+                                styles.searchResultItem,
+                                { backgroundColor: theme.colors.surface },
+                                theme.shadows.sm,
+                            ]}
+                            onPress={() => router.push(`/book/${item.id}`)}
+                        >
+                            <Image
+                                source={{ uri: item.imageURL }}
+                                style={styles.searchResultImage}
+                                resizeMode="cover"
+                            />
+                            <View style={styles.searchResultContent}>
+                                <Text
+                                    style={[
+                                        styles.searchResultTitle,
+                                        {
+                                            color: theme.colors.text,
+                                            fontFamily:
+                                                theme.typography.fontFamily
+                                                    .bold,
+                                        },
+                                    ]}
+                                    numberOfLines={2}
+                                >
+                                    {item.title}
+                                </Text>
+                                <Text
+                                    style={[
+                                        styles.searchResultSubtitle,
+                                        {
+                                            color: theme.colors.textSecondary,
+                                            fontFamily:
+                                                theme.typography.fontFamily
+                                                    .regular,
+                                        },
+                                    ]}
+                                >
+                                    Tap to view details
+                                </Text>
+                            </View>
+                            <Ionicons
+                                name="chevron-forward"
+                                size={20}
+                                color={theme.colors.textLight}
+                            />
+                        </TouchableOpacity>
                     )}
                     keyExtractor={(item) => item.id}
                     showsVerticalScrollIndicator={false}
                     scrollEnabled={false}
+                    ItemSeparatorComponent={() => (
+                        <View style={{ height: 8 }} />
+                    )}
                 />
             </View>
         );
@@ -421,5 +476,29 @@ const styles = StyleSheet.create({
     horizontalList: {
         paddingLeft: 20,
         paddingRight: 8,
+    },
+    searchResultItem: {
+        flexDirection: "row",
+        alignItems: "center",
+        padding: 16,
+        marginHorizontal: 20,
+        borderRadius: 12,
+    },
+    searchResultImage: {
+        width: 48,
+        height: 64,
+        borderRadius: 8,
+        marginRight: 16,
+    },
+    searchResultContent: {
+        flex: 1,
+        justifyContent: "center",
+    },
+    searchResultTitle: {
+        fontSize: 16,
+        marginBottom: 4,
+    },
+    searchResultSubtitle: {
+        fontSize: 14,
     },
 });
