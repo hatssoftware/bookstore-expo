@@ -24,7 +24,7 @@ export function BookCard({
     const theme = useAppTheme();
 
     const formatPrice = (price: string) => {
-        return `${Number(price).toFixed(2)} CZK`;
+        return `${Number(price)} CZK`;
     };
 
     const getRating = () => {
@@ -97,7 +97,8 @@ export function BookCard({
                     ]}
                     numberOfLines={1}
                 >
-                    {book.authors.map((author) => author.name).join(", ")}
+                    {book.authors?.map((author) => author.name).join(", ") ||
+                        "Unknown Author"}
                 </Text>
 
                 {book.genres && book.genres.length > 0 && (
@@ -111,7 +112,7 @@ export function BookCard({
                         ]}
                         numberOfLines={1}
                     >
-                        {book.genres.map((genre) => genre.name).join(", ")}
+                        {book.genres?.map((genre) => genre.name).join(", ")}
                     </Text>
                 )}
 

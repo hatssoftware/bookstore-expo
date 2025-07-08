@@ -1,6 +1,6 @@
-import { QueryProvider } from "@/contexts/QueryProvider";
-import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Stack } from "expo-router";
+import { QueryProvider } from "../contexts/QueryProvider";
+import { ThemeProvider } from "../contexts/ThemeContext";
 
 export default function RootLayout() {
     return (
