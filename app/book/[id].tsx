@@ -1,4 +1,5 @@
 import { useBook } from "@/hooks/useApi";
+import { theme } from "@/lib/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
@@ -566,14 +567,12 @@ export default function BookDetailScreen() {
 
                 <View style={styles.actionsSection}>
                     {isInCart ? (
-                        // Show quantity selector when item is in cart
                         <View style={styles.quantitySelector}>
                             <TouchableOpacity
                                 style={[
                                     styles.quantityButton,
                                     {
-                                        backgroundColor:
-                                            theme.colors.backgroundSecondary,
+                                        backgroundColor: theme.colors.accent,
                                     },
                                 ]}
                                 onPress={() => handleQuantityChange(-1)}
@@ -585,7 +584,7 @@ export default function BookDetailScreen() {
                                     color={
                                         quantity <= 0
                                             ? theme.colors.textLight
-                                            : theme.colors.text
+                                            : theme.colors.white
                                     }
                                 />
                             </TouchableOpacity>
@@ -607,8 +606,7 @@ export default function BookDetailScreen() {
                                 style={[
                                     styles.quantityButton,
                                     {
-                                        backgroundColor:
-                                            theme.colors.backgroundSecondary,
+                                        backgroundColor: theme.colors.accent,
                                     },
                                 ]}
                                 onPress={() => handleQuantityChange(1)}
@@ -620,7 +618,7 @@ export default function BookDetailScreen() {
                                     color={
                                         quantity >= book.stockQuantity
                                             ? theme.colors.textLight
-                                            : theme.colors.text
+                                            : theme.colors.white
                                     }
                                 />
                             </TouchableOpacity>
@@ -822,6 +820,7 @@ const styles = StyleSheet.create({
         borderRadius: 18,
         alignItems: "center",
         justifyContent: "center",
+        backgroundColor: theme.colors.accent,
     },
     quantityText: {
         fontSize: 18,

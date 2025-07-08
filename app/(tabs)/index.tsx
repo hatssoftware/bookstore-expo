@@ -278,12 +278,7 @@ export default function HomeScreen() {
 
             <SafeAreaView>
                 {/* Header */}
-                <View
-                    style={[
-                        styles.header,
-                        { backgroundColor: theme.colors.surface },
-                    ]}
-                >
+                <View style={[styles.header]}>
                     <View style={styles.headerContent}>
                         <View>
                             <Text
@@ -303,12 +298,7 @@ export default function HomeScreen() {
                 </View>
 
                 {/* Search */}
-                <View
-                    style={[
-                        styles.searchSection,
-                        { backgroundColor: theme.colors.surface },
-                    ]}
-                >
+                <View style={[styles.searchSection]}>
                     <SearchBar
                         value={searchQuery}
                         onChangeText={handleSearch}
@@ -334,6 +324,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        paddingBottom: 64,
     },
     header: {
         paddingHorizontal: 20,
