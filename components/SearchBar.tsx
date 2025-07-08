@@ -94,70 +94,77 @@ export function SearchBar({
     return (
         <Animated.View
             style={[
-                styles.container,
                 {
-                    backgroundColor: animatedBackgroundColor,
-                    borderColor: animatedBorderColor,
                     transform: [{ scale: scaleAnim }],
                 },
                 theme.shadows.sm,
             ]}
         >
-            <View style={styles.searchIconContainer}>
-                <Ionicons
-                    name="search"
-                    size={20}
-                    color={
-                        isFocused
-                            ? theme.colors.borderFocus
-                            : theme.colors.textLight
-                    }
-                />
-            </View>
-
-            <TextInput
+            <Animated.View
                 style={[
-                    styles.input,
+                    styles.container,
                     {
-                        color: theme.colors.text,
-                        fontFamily: theme.typography.fontFamily.regular,
-                        fontSize: theme.typography.fontSize.base,
+                        backgroundColor: animatedBackgroundColor,
+                        borderColor: animatedBorderColor,
                     },
                 ]}
-                value={value}
-                onChangeText={onChangeText}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-                placeholder={placeholder}
-                placeholderTextColor={theme.colors.textLight}
-                autoFocus={autoFocus}
-                autoCapitalize="none"
-                autoCorrect={false}
-                clearButtonMode="never" // We'll use our custom clear button
-                returnKeyType="search"
-                selectTextOnFocus
-            />
+            >
+                <View style={styles.searchIconContainer}>
+                    <Ionicons
+                        name="search"
+                        size={20}
+                        color={
+                            isFocused
+                                ? theme.colors.borderFocus
+                                : theme.colors.textLight
+                        }
+                    />
+                </View>
 
-            {value.length > 0 && (
-                <TouchableOpacity
-                    style={styles.clearButton}
-                    onPress={handleClear}
-                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                >
-                    <View
-                        style={[
-                            styles.clearButtonBackground,
-                            { backgroundColor: theme.colors.textLight },
-                        ]}
+                <TextInput
+                    style={[
+                        styles.input,
+                        {
+                            color: theme.colors.text,
+                            fontFamily: theme.typography.fontFamily.regular,
+                            fontSize: theme.typography.fontSize.base,
+                        },
+                    ]}
+                    value={value}
+                    onChangeText={onChangeText}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                    placeholder={placeholder}
+                    placeholderTextColor={theme.colors.textLight}
+                    autoFocus={autoFocus}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    clearButtonMode="never" // We'll use our custom clear button
+                    returnKeyType="search"
+                    selectTextOnFocus
+                />
+
+                {value.length > 0 && (
+                    <TouchableOpacity
+                        style={styles.clearButton}
+                        onPress={handleClear}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                     >
-                        <Ionicons
-                            name="close"
-                            size={14}
-                            color={theme.colors.surface}
-                        />
-                    </View>
-                </TouchableOpacity>
-            )}
+                        <View
+                            style={[
+                                styles.clearButtonBackground,
+                                { backgroundColor: theme.colors.textLight },
+                            ]}
+                        >
+                            <Ionicons
+                                name="close"
+                                size={14}
+                                color={theme.colors.surface}
+                            />
+                        </View>
+                    </TouchableOpacity>
+                )}
+            </Animated.View>
         </Animated.View>
     );
 }

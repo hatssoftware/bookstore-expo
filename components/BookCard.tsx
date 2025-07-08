@@ -85,7 +85,6 @@ export function BookCard({
                     </Text>
                 </View>
             </View>
-
             <View style={styles.compactContent}>
                 <Text
                     style={[
@@ -139,26 +138,6 @@ export function BookCard({
                     </View>
                 )}
             </View>
-
-            {onFavoritePress && (
-                <TouchableOpacity
-                    style={[
-                        styles.compactFavoriteButton,
-                        { backgroundColor: theme.colors.background },
-                    ]}
-                    onPress={onFavoritePress}
-                >
-                    <Ionicons
-                        name={isFavorite ? "heart" : "heart-outline"}
-                        size={16}
-                        color={
-                            isFavorite
-                                ? theme.colors.accent
-                                : theme.colors.textLight
-                        }
-                    />
-                </TouchableOpacity>
-            )}
         </Pressable>
     );
 
@@ -371,25 +350,6 @@ export function BookCard({
                             },
                         ]}
                     />
-                    {onFavoritePress && (
-                        <TouchableOpacity
-                            style={[
-                                styles.favoriteButton,
-                                { backgroundColor: theme.colors.white },
-                            ]}
-                            onPress={onFavoritePress}
-                        >
-                            <Ionicons
-                                name={isFavorite ? "heart" : "heart-outline"}
-                                size={18}
-                                color={
-                                    isFavorite
-                                        ? theme.colors.accent
-                                        : theme.colors.textLight
-                                }
-                            />
-                        </TouchableOpacity>
-                    )}
                 </View>
             </View>
 
@@ -423,7 +383,7 @@ export function BookCard({
                     >
                         {book.authors
                             ?.map((author) => author.name)
-                            .join(", ") || "Unknown Author"}
+                            .join(", ") || "Unknown"}
                     </Text>
                 </View>
 
@@ -492,22 +452,6 @@ export function BookCard({
                             ]}
                         >
                             Only {book.stockQuantity} left
-                        </Text>
-                    )}
-
-                    {book.stockQuantity === 0 && (
-                        <Text
-                            style={[
-                                styles.stockText,
-                                {
-                                    color: theme.colors.error,
-                                    fontFamily:
-                                        theme.typography.fontFamily.medium,
-                                    fontSize: theme.typography.fontSize.xs,
-                                },
-                            ]}
-                        >
-                            Out of stock
                         </Text>
                     )}
                 </View>

@@ -10,19 +10,30 @@ export interface ApiResponse<T = any> {
 // Book types
 export interface Book {
     id: string;
+    ISBN10: string;
+    ISBN13: string;
     title: string;
-    authors: { name: string }[];
-    genres: { name: string; id?: string }[];
-    imageURL: string;
-    price: number;
-    stockQuantity: number;
+    subtitle?: string;
+    description?: string;
+    imageURL?: string;
     year?: number;
-    pagecount?: number;
     criticRating?: number;
+    pagecount?: number;
     bookStockRating?: number;
+    bookStockRatingCount?: number;
     combinedRating?: number;
     combinedRatingCount?: number;
-    bookStockRatingCount?: number;
+    price: number;
+    salePrice?: number;
+    stockQuantity: number;
+    weight?: number;
+    dimensions?: { length: number; width: number; height: number };
+    isHidden: boolean;
+    isUnavailable: boolean;
+    createdAt: string;
+    updatedAt: string;
+    authors: { name: string }[];
+    genres: { name: string; id?: string }[];
 }
 
 // Cart types

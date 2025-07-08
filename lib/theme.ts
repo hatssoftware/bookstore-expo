@@ -4,10 +4,10 @@ export const colors = {
     primaryLight: "#1a1a1a",
     primaryDark: "#000000",
 
-    // Accent colors - warm and inviting
-    accent: "#ff6b35",
-    accentLight: "#ff8c42",
-    accentDark: "#e55a2b",
+    // Accent colors - sophisticated and modern
+    accent: "#18325f",
+    accentLight: "#5a5a6a",
+    accentDark: "#323240",
 
     // Secondary colors - subtle and refined
     secondary: "#6366f1",

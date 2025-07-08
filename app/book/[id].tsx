@@ -1,3 +1,4 @@
+import { useBook } from "@/hooks/useApi";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
@@ -20,37 +21,110 @@ export default function BookDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const theme = useAppTheme();
     const [isFavorite, setIsFavorite] = useState(false);
-    const [quantity, setQuantity] = useState(1);
+    const [quantity, setQuantity] = useState(0);
+    const [isInCart, setIsInCart] = useState(false);
 
-    // In a real app, you'd fetch the book data
-    // const { data: book, isLoading } = useBook(id);
+    // Get book from API
+    const { data: book, isLoading, error } = useBook(id);
 
-    // Mock book data for demo
-    const book = {
-        id: id,
-        title: "The Silent Observer",
-        authors: [{ name: "Emma Richardson" }],
-        imageURL:
-            "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400",
-        price: 299,
-        description:
-            "A captivating psychological thriller that follows Dr. Sarah Chen, a forensic psychologist who becomes entangled in a complex murder case. When the prime suspect claims to have witnessed the crime through telepathic visions, Sarah must question everything she believes about reality and the human mind. Set against the backdrop of modern-day San Francisco, this page-turner explores themes of perception, truth, and the thin line between genius and madness.",
-        genres: [
-            { id: 1, name: "Thriller" },
-            { id: 2, name: "Mystery" },
-        ],
-        publisher: "Midnight Press",
-        publicationDate: "2024-01-15",
-        isbn: "978-0-123456-78-9",
-        pageCount: 342,
-        language: "English",
-        stockQuantity: 12,
-        combinedRating: 4.3,
-        combinedRatingCount: 1247,
-    };
+    // Early return for loading state
+    if (isLoading) {
+        return (
+            <View
+                style={[
+                    styles.container,
+                    { backgroundColor: theme.colors.background },
+                ]}
+            >
+                <SafeAreaView>
+                    <View
+                        style={[
+                            styles.header,
+                            { backgroundColor: theme.colors.surface },
+                        ]}
+                    >
+                        <TouchableOpacity
+                            style={[
+                                styles.headerButton,
+                                {
+                                    backgroundColor:
+                                        theme.colors.backgroundSecondary,
+                                },
+                            ]}
+                            onPress={() => router.back()}
+                        >
+                            <Ionicons
+                                name="arrow-back"
+                                size={24}
+                                color={theme.colors.text}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                </SafeAreaView>
+                <View style={styles.loadingContainer}>
+                    <Text
+                        style={[
+                            styles.loadingText,
+                            { color: theme.colors.text },
+                        ]}
+                    >
+                        Loading...
+                    </Text>
+                </View>
+            </View>
+        );
+    }
 
-    const formatPrice = (price: number) => {
-        return `${price.toFixed(0)} CZK`;
+    // Early return for error state
+    if (error || !book) {
+        return (
+            <View
+                style={[
+                    styles.container,
+                    { backgroundColor: theme.colors.background },
+                ]}
+            >
+                <SafeAreaView>
+                    <View
+                        style={[
+                            styles.header,
+                            { backgroundColor: theme.colors.surface },
+                        ]}
+                    >
+                        <TouchableOpacity
+                            style={[
+                                styles.headerButton,
+                                {
+                                    backgroundColor:
+                                        theme.colors.backgroundSecondary,
+                                },
+                            ]}
+                            onPress={() => router.back()}
+                        >
+                            <Ionicons
+                                name="arrow-back"
+                                size={24}
+                                color={theme.colors.text}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                </SafeAreaView>
+                <View style={styles.loadingContainer}>
+                    <Text
+                        style={[
+                            styles.errorText,
+                            { color: theme.colors.error },
+                        ]}
+                    >
+                        {error ? "Error loading book" : "Book not found"}
+                    </Text>
+                </View>
+            </View>
+        );
+    }
+
+    const formatPrice = (price: string) => {
+        return `${Number(price).toFixed(0)} CZK`;
     };
 
     const getRating = () => {
@@ -66,13 +140,26 @@ export default function BookDetailScreen() {
     };
 
     const handleAddToCart = () => {
-        console.log(`Added ${quantity} copies of "${book.title}" to cart`);
+        if (!isInCart) {
+            // First time adding to cart
+            setQuantity(1);
+            setIsInCart(true);
+            console.log(`Added 1 copy of "${book.title}" to cart`);
+        }
     };
 
     const handleQuantityChange = (change: number) => {
         const newQuantity = quantity + change;
-        if (newQuantity >= 1 && newQuantity <= book.stockQuantity) {
+        if (newQuantity >= 0 && newQuantity <= book.stockQuantity) {
             setQuantity(newQuantity);
+            if (newQuantity === 0) {
+                setIsInCart(false);
+                console.log(`Removed "${book.title}" from cart`);
+            } else {
+                console.log(
+                    `Updated "${book.title}" quantity to ${newQuantity}`
+                );
+            }
         }
     };
 
@@ -146,7 +233,7 @@ export default function BookDetailScreen() {
                 >
                     <View style={styles.bookImageContainer}>
                         <Image
-                            source={{ uri: book.imageURL }}
+                            source={{ uri: book?.imageURL }}
                             style={styles.bookImage}
                             resizeMode="cover"
                         />
@@ -344,33 +431,6 @@ export default function BookDetailScreen() {
                                     },
                                 ]}
                             >
-                                Publisher
-                            </Text>
-                            <Text
-                                style={[
-                                    styles.detailValue,
-                                    {
-                                        color: theme.colors.text,
-                                        fontFamily:
-                                            theme.typography.fontFamily.regular,
-                                    },
-                                ]}
-                            >
-                                {book.publisher}
-                            </Text>
-                        </View>
-
-                        <View style={styles.detailItem}>
-                            <Text
-                                style={[
-                                    styles.detailLabel,
-                                    {
-                                        color: theme.colors.textLight,
-                                        fontFamily:
-                                            theme.typography.fontFamily.medium,
-                                    },
-                                ]}
-                            >
                                 Pages
                             </Text>
                             <Text
@@ -383,7 +443,7 @@ export default function BookDetailScreen() {
                                     },
                                 ]}
                             >
-                                {book.pageCount}
+                                {book.pagecount}
                             </Text>
                         </View>
 
@@ -398,7 +458,7 @@ export default function BookDetailScreen() {
                                     },
                                 ]}
                             >
-                                Language
+                                Year
                             </Text>
                             <Text
                                 style={[
@@ -410,7 +470,7 @@ export default function BookDetailScreen() {
                                     },
                                 ]}
                             >
-                                {book.language}
+                                {book.year}
                             </Text>
                         </View>
 
@@ -425,7 +485,7 @@ export default function BookDetailScreen() {
                                     },
                                 ]}
                             >
-                                ISBN
+                                Stock
                             </Text>
                             <Text
                                 style={[
@@ -437,7 +497,34 @@ export default function BookDetailScreen() {
                                     },
                                 ]}
                             >
-                                {book.isbn}
+                                {book.stockQuantity} available
+                            </Text>
+                        </View>
+
+                        <View style={styles.detailItem}>
+                            <Text
+                                style={[
+                                    styles.detailLabel,
+                                    {
+                                        color: theme.colors.textLight,
+                                        fontFamily:
+                                            theme.typography.fontFamily.medium,
+                                    },
+                                ]}
+                            >
+                                Rating
+                            </Text>
+                            <Text
+                                style={[
+                                    styles.detailValue,
+                                    {
+                                        color: theme.colors.text,
+                                        fontFamily:
+                                            theme.typography.fontFamily.regular,
+                                    },
+                                ]}
+                            >
+                                {book.criticRating}/5
                             </Text>
                         </View>
                     </View>
@@ -473,101 +560,105 @@ export default function BookDetailScreen() {
                             },
                         ]}
                     >
-                        {formatPrice(book.price)}
+                        {formatPrice(book.price.toString())}
                     </Text>
                 </View>
 
                 <View style={styles.actionsSection}>
-                    <View style={styles.quantitySelector}>
+                    {isInCart ? (
+                        // Show quantity selector when item is in cart
+                        <View style={styles.quantitySelector}>
+                            <TouchableOpacity
+                                style={[
+                                    styles.quantityButton,
+                                    {
+                                        backgroundColor:
+                                            theme.colors.backgroundSecondary,
+                                    },
+                                ]}
+                                onPress={() => handleQuantityChange(-1)}
+                                disabled={quantity <= 0}
+                            >
+                                <Ionicons
+                                    name="remove"
+                                    size={20}
+                                    color={
+                                        quantity <= 0
+                                            ? theme.colors.textLight
+                                            : theme.colors.text
+                                    }
+                                />
+                            </TouchableOpacity>
+
+                            <Text
+                                style={[
+                                    styles.quantityText,
+                                    {
+                                        color: theme.colors.text,
+                                        fontFamily:
+                                            theme.typography.fontFamily.bold,
+                                    },
+                                ]}
+                            >
+                                {quantity}
+                            </Text>
+
+                            <TouchableOpacity
+                                style={[
+                                    styles.quantityButton,
+                                    {
+                                        backgroundColor:
+                                            theme.colors.backgroundSecondary,
+                                    },
+                                ]}
+                                onPress={() => handleQuantityChange(1)}
+                                disabled={quantity >= book.stockQuantity}
+                            >
+                                <Ionicons
+                                    name="add"
+                                    size={20}
+                                    color={
+                                        quantity >= book.stockQuantity
+                                            ? theme.colors.textLight
+                                            : theme.colors.text
+                                    }
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    ) : (
+                        // Show add to cart button when item is not in cart
                         <TouchableOpacity
                             style={[
-                                styles.quantityButton,
+                                styles.addToCartButton,
                                 {
                                     backgroundColor:
-                                        theme.colors.backgroundSecondary,
+                                        book.stockQuantity > 0
+                                            ? theme.colors.accent
+                                            : theme.colors.textLight,
                                 },
                             ]}
-                            onPress={() => handleQuantityChange(-1)}
-                            disabled={quantity <= 1}
+                            onPress={handleAddToCart}
+                            disabled={book.stockQuantity === 0}
                         >
                             <Ionicons
-                                name="remove"
-                                size={20}
-                                color={
-                                    quantity <= 1
-                                        ? theme.colors.textLight
-                                        : theme.colors.text
-                                }
+                                name="bag-add"
+                                size={24}
+                                color={theme.colors.white}
                             />
+                            <Text
+                                style={[
+                                    styles.addToCartText,
+                                    {
+                                        color: theme.colors.white,
+                                        fontFamily:
+                                            theme.typography.fontFamily.bold,
+                                    },
+                                ]}
+                            >
+                                Add to Cart
+                            </Text>
                         </TouchableOpacity>
-
-                        <Text
-                            style={[
-                                styles.quantityText,
-                                {
-                                    color: theme.colors.text,
-                                    fontFamily:
-                                        theme.typography.fontFamily.bold,
-                                },
-                            ]}
-                        >
-                            {quantity}
-                        </Text>
-
-                        <TouchableOpacity
-                            style={[
-                                styles.quantityButton,
-                                {
-                                    backgroundColor:
-                                        theme.colors.backgroundSecondary,
-                                },
-                            ]}
-                            onPress={() => handleQuantityChange(1)}
-                            disabled={quantity >= book.stockQuantity}
-                        >
-                            <Ionicons
-                                name="add"
-                                size={20}
-                                color={
-                                    quantity >= book.stockQuantity
-                                        ? theme.colors.textLight
-                                        : theme.colors.text
-                                }
-                            />
-                        </TouchableOpacity>
-                    </View>
-
-                    <TouchableOpacity
-                        style={[
-                            styles.addToCartButton,
-                            {
-                                backgroundColor:
-                                    book.stockQuantity > 0
-                                        ? theme.colors.accent
-                                        : theme.colors.textLight,
-                            },
-                        ]}
-                        onPress={handleAddToCart}
-                        disabled={book.stockQuantity === 0}
-                    >
-                        <Ionicons
-                            name="bag-add"
-                            size={24}
-                            color={theme.colors.white}
-                        />
-                        <Text
-                            style={[
-                                styles.addToCartText,
-                                {
-                                    color: theme.colors.white,
-                                    fontFamily:
-                                        theme.typography.fontFamily.bold,
-                                },
-                            ]}
-                        >
-                            Add to Cart
-                        </Text>
-                    </TouchableOpacity>
+                    )}
                 </View>
             </View>
         </View>
@@ -695,6 +786,7 @@ const styles = StyleSheet.create({
         paddingVertical: 16,
         justifyContent: "space-between",
         alignItems: "center",
+        paddingBottom: 32,
     },
     priceSection: {
         flex: 1,
@@ -710,13 +802,19 @@ const styles = StyleSheet.create({
         letterSpacing: -1,
     },
     actionsSection: {
-        flexDirection: "row",
+        flex: 1,
+        justifyContent: "flex-end",
         alignItems: "center",
     },
     quantitySelector: {
         flexDirection: "row",
         alignItems: "center",
-        marginRight: 16,
+        justifyContent: "center",
+        backgroundColor: "transparent",
+        borderRadius: 12,
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        flex: 1,
     },
     quantityButton: {
         width: 36,
@@ -727,19 +825,36 @@ const styles = StyleSheet.create({
     },
     quantityText: {
         fontSize: 18,
-        marginHorizontal: 16,
-        minWidth: 24,
+        marginHorizontal: 20,
+        minWidth: 30,
         textAlign: "center",
+        fontWeight: "600",
     },
     addToCartButton: {
         flexDirection: "row",
         alignItems: "center",
+        justifyContent: "center",
         paddingHorizontal: 24,
         paddingVertical: 12,
         borderRadius: 12,
+        flex: 1,
     },
     addToCartText: {
         fontSize: 16,
         marginLeft: 8,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingHorizontal: 20,
+    },
+    loadingText: {
+        fontSize: 18,
+        textAlign: "center",
+    },
+    errorText: {
+        fontSize: 18,
+        textAlign: "center",
     },
 });

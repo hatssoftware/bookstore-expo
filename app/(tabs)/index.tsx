@@ -79,17 +79,19 @@ export default function HomeScreen() {
 
         return (
             <View style={styles.section}>
-                <Text
-                    style={[
-                        styles.sectionTitle,
-                        {
-                            color: theme.colors.text,
-                            fontFamily: theme.typography.fontFamily.bold,
-                        },
-                    ]}
-                >
-                    Featured Book
-                </Text>
+                <View style={styles.sectionHeader}>
+                    <Text
+                        style={[
+                            styles.sectionTitle,
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
+                        ]}
+                    >
+                        Featured Book
+                    </Text>
+                </View>
                 <BookCard
                     book={featuredBook}
                     variant="featured"
@@ -156,6 +158,7 @@ export default function HomeScreen() {
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.horizontalList}
+                    ItemSeparatorComponent={() => <View style={{ width: 8 }} />}
                 />
             </View>
         );
@@ -261,65 +264,6 @@ export default function HomeScreen() {
         );
     };
 
-    const renderWelcomeSection = () => {
-        if (isAuthenticated) return null;
-
-        return (
-            <View
-                style={[
-                    styles.welcomeSection,
-                    { backgroundColor: theme.colors.surface },
-                ]}
-            >
-                <View style={styles.welcomeContent}>
-                    <Text
-                        style={[
-                            styles.welcomeTitle,
-                            {
-                                color: theme.colors.text,
-                                fontFamily: theme.typography.fontFamily.bold,
-                            },
-                        ]}
-                    >
-                        Welcome to Our Bookstore
-                    </Text>
-                    <Text
-                        style={[
-                            styles.welcomeDescription,
-                            {
-                                color: theme.colors.textSecondary,
-                                fontFamily: theme.typography.fontFamily.regular,
-                            },
-                        ]}
-                    >
-                        Discover thousands of books, create your personal
-                        library, and get personalized recommendations.
-                    </Text>
-                    <TouchableOpacity
-                        style={[
-                            styles.signInButton,
-                            { backgroundColor: theme.colors.accent },
-                        ]}
-                        onPress={() => console.log("Navigate to sign in")}
-                    >
-                        <Text
-                            style={[
-                                styles.signInButtonText,
-                                {
-                                    color: theme.colors.white,
-                                    fontFamily:
-                                        theme.typography.fontFamily.bold,
-                                },
-                            ]}
-                        >
-                            Sign In to Get Started
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        );
-    };
-
     return (
         <View
             style={[
@@ -378,7 +322,6 @@ export default function HomeScreen() {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
             >
-                {renderWelcomeSection()}
                 {renderSearchResults()}
                 {!searchQuery && renderFeaturedSection()}
                 {!searchQuery && renderBestsellersSection()}
