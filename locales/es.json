@@ -1,0 +1,207 @@
+{
+  "tabs": {
+    "home": "Inicio",
+    "favorites": "Favoritos",
+    "cart": "Carrito",
+    "orders": "Pedidos",
+    "account": "Cuenta"
+  },
+  "account": {
+    "title": "Cuenta",
+    "signIn": {
+      "title": "Inicia sesión en tu cuenta",
+      "description": "Accede a tu perfil, pedidos, favoritos y recomendaciones personalizadas.",
+      "signInButton": "Iniciar Sesión",
+      "createAccountButton": "Crear Cuenta"
+    },
+    "menu": {
+      "browse": "Explorar",
+      "settings": "Configuración",
+      "language": "Idioma",
+      "selectLanguage": "Seleccionar Idioma",
+      "help": "Ayuda y Soporte",
+      "contact": "Contáctanos",
+      "about": "Acerca de",
+      "privacy": "Política de Privacidad",
+      "terms": "Términos de Servicio",
+      "signOut": "Cerrar Sesión",
+      "profile": "Perfil",
+      "orders": "Pedidos",
+      "favorites": "Favoritos",
+      "paymentMethods": "Métodos de Pago",
+      "shippingAddresses": "Direcciones de Envío",
+      "notifications": "Notificaciones",
+      "darkMode": "Modo Oscuro",
+      "version": "Versión"
+    },
+    "subtitles": {
+      "helpSupport": "Preguntas frecuentes y soporte",
+      "rateApp": "Comparte tu opinión",
+      "paymentOptions": "Gestionar opciones de pago",
+      "readingPreferences": "Preferencias de lectura y recomendaciones",
+      "orderUpdates": "Actualizaciones de pedidos y promociones",
+      "addAddress": "Agregar dirección"
+    },
+    "sections": {
+      "support": "Soporte",
+      "legal": "Legal"
+    },
+    "alerts": {
+      "signOutTitle": "Cerrar Sesión",
+      "signOutMessage": "¿Estás seguro de que quieres cerrar sesión?",
+      "cancel": "Cancelar"
+    }
+  },
+  "home": {
+    "appName": "Librería",
+    "search": {
+      "placeholder": "Buscar libros, autores o géneros..."
+    },
+    "sections": {
+      "featured": "Libro Destacado",
+      "bestsellers": "Más Vendidos",
+      "recommendations": "Recomendado para ti",
+      "seeAll": "Ver todo"
+    },
+    "welcome": {
+      "title": "Bienvenido a la librería",
+      "description": "Descubre miles de libros, lee reseñas y encuentra tu próxima lectura favorita.",
+      "signInToExplore": "Inicia sesión para recomendaciones personalizadas"
+    }
+  },
+  "cart": {
+    "title": "Carrito",
+    "empty": {
+      "title": "Tu carrito está vacío",
+      "description": "Explora nuestra colección y añade algunos libros a tu carrito.",
+      "exploreButton": "Explorar Libros"
+    },
+    "signIn": {
+      "title": "Inicia sesión para ver el carrito",
+      "description": "Crea una cuenta o inicia sesión para añadir artículos a tu carrito y realizar compras.",
+      "signInButton": "Iniciar Sesión"
+    },
+    "alerts": {
+      "removeItem": "Eliminar Artículo",
+      "removeItemMessage": "¿Eliminar \"{title}\" de tu carrito?",
+      "clearCart": "Vaciar Carrito",
+      "clearCartMessage": "¿Eliminar todos los artículos de tu carrito?",
+      "remove": "Eliminar",
+      "clear": "Vaciar"
+    },
+    "total": "Total",
+    "checkout": "Finalizar Compra",
+    "quantity": "Cantidad",
+    "remove": "Eliminar"
+  },
+  "orders": {
+    "title": "Pedidos",
+    "empty": {
+      "title": "Aún no hay pedidos",
+      "description": "Comienza a comprar para ver tus pedidos aquí. Tu historial de compras se guardará para un seguimiento fácil.",
+      "startShoppingButton": "Comenzar a Comprar"
+    },
+    "signIn": {
+      "title": "Inicia sesión para ver pedidos",
+      "description": "Crea una cuenta o inicia sesión para ver tu historial de pedidos y hacer seguimiento de tus compras.",
+      "signInButton": "Iniciar Sesión"
+    },
+    "loading": "Cargando pedidos...",
+    "status": {
+      "pending": "Pendiente",
+      "processing": "Procesando",
+      "shipped": "Enviado",
+      "delivered": "Entregado",
+      "cancelled": "Cancelado"
+    }
+  },
+  "favorites": {
+    "title": "Favoritos",
+    "empty": {
+      "title": "Aún no hay favoritos",
+      "description": "Comienza a explorar libros y toca el ícono del corazón para añadirlos a tus favoritos.",
+      "exploreButton": "Explorar Libros"
+    },
+    "signIn": {
+      "title": "Inicia sesión para ver favoritos",
+      "description": "Crea una cuenta o inicia sesión para guardar tus libros favoritos y acceder a ellos desde cualquier dispositivo.",
+      "signInButton": "Iniciar Sesión"
+    }
+  },
+  "book": {
+    "addToCart": "Añadir al Carrito",
+    "addToFavorites": "Añadir a Favoritos",
+    "removeFromFavorites": "Quitar de Favoritos",
+    "description": "Descripción",
+    "author": "Autor",
+    "publisher": "Editorial",
+    "publishedDate": "Fecha de Publicación",
+    "pages": "Páginas",
+    "language": "Idioma",
+    "isbn": "ISBN",
+    "price": "Precio",
+    "inStock": "En Stock",
+    "outOfStock": "Agotado",
+    "reviews": "Reseñas",
+    "rating": "Calificación",
+    "loading": "Cargando...",
+    "error": "Error al cargar el libro",
+    "notFound": "Libro no encontrado",
+    "by": "por",
+    "unknownAuthor": "un autor desconocido",
+    "sections": {
+      "aboutBook": "Sobre este libro",
+      "details": "Detalles"
+    },
+    "details": {
+      "pages": "Páginas",
+      "year": "Año",
+      "stock": "Stock",
+      "rating": "Calificación",
+      "available": "disponibles"
+    },
+    "stock": {
+      "inStock": "En Stock",
+      "limited": "Quedan",
+      "outOfStock": "Agotado"
+    }
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "retry": "Reintentar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "remove": "Quitar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "apply": "Aplicar",
+    "reset": "Restablecer",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "done": "Hecho",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "cs": "Čeština",
+    "fr": "Français",
+    "de": "Deutsch"
+  },
+  "errors": {
+    "generic": "Ocurrió un error. Por favor, inténtalo de nuevo.",
+    "network": "Error de red. Verifica tu conexión a internet.",
+    "notFound": "Página no encontrada",
+    "unauthorized": "No tienes permisos para acceder a este contenido",
+    "serverError": "Error del servidor. Inténtalo más tarde."
+  }
+} 

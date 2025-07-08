@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { Text, View } from "react-native";
+import { useI18n } from "../../contexts/I18nContext";
 import { useAppTheme } from "../../contexts/ThemeContext";
 import { useCart } from "../../hooks/useApi";
 
@@ -68,6 +69,7 @@ function TabBarBadge({ count }: { count: number }) {
 
 export default function TabLayout() {
     const theme = useAppTheme();
+    const { t } = useI18n();
     const { data: cart } = useCart();
     const cartItemCount =
         cart?.items?.reduce(
@@ -117,7 +119,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: "Home",
+                    title: t("tabs.home"),
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon
                             name={focused ? "home" : "home-outline"}
@@ -130,7 +132,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="favorites"
                 options={{
-                    title: "Favorites",
+                    title: t("tabs.favorites"),
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon
                             name={focused ? "heart" : "heart-outline"}
@@ -143,7 +145,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="cart"
                 options={{
-                    title: "Cart",
+                    title: t("tabs.cart"),
                     tabBarIcon: ({ color, focused }) => (
                         <View style={{ position: "relative" }}>
                             <TabBarIcon
@@ -159,7 +161,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="orders"
                 options={{
-                    title: "Orders",
+                    title: t("tabs.orders"),
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon
                             name={focused ? "receipt" : "receipt-outline"}
@@ -172,7 +174,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="account"
                 options={{
-                    title: "Account",
+                    title: t("tabs.account"),
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon
                             name={focused ? "person" : "person-outline"}

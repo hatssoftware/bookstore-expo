@@ -9,6 +9,7 @@ import {
     View,
 } from "react-native";
 import { BookCard } from "../../components/BookCard";
+import { useI18n } from "../../contexts/I18nContext";
 import { useAppTheme } from "../../contexts/ThemeContext";
 import {
     useAddToCart,
@@ -20,6 +21,7 @@ import { Book } from "../../lib/api";
 
 export default function FavoritesScreen() {
     const theme = useAppTheme();
+    const { t } = useI18n();
     const { data: session } = useSession();
     const {
         data: favorites,
@@ -92,7 +94,7 @@ export default function FavoritesScreen() {
                             { color: theme.colors.text },
                         ]}
                     >
-                        Sign in to view favorites
+                        {t("favorites.signIn.title")}
                     </Text>
                     <Text
                         style={[
@@ -100,8 +102,7 @@ export default function FavoritesScreen() {
                             { color: theme.colors.textSecondary },
                         ]}
                     >
-                        Create an account or sign in to save your favorite books
-                        and access them from any device.
+                        {t("favorites.signIn.description")}
                     </Text>
                     <TouchableOpacity
                         style={[
@@ -118,7 +119,7 @@ export default function FavoritesScreen() {
                                 { color: theme.colors.white },
                             ]}
                         >
-                            Sign In
+                            {t("favorites.signIn.signInButton")}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -225,7 +226,7 @@ export default function FavoritesScreen() {
                             { color: theme.colors.text },
                         ]}
                     >
-                        No favorites yet
+                        {t("favorites.empty.title")}
                     </Text>
                     <Text
                         style={[
@@ -233,8 +234,7 @@ export default function FavoritesScreen() {
                             { color: theme.colors.textSecondary },
                         ]}
                     >
-                        Start exploring books and tap the heart icon to add them
-                        to your favorites.
+                        {t("favorites.empty.description")}
                     </Text>
                     <TouchableOpacity
                         style={[
@@ -252,7 +252,7 @@ export default function FavoritesScreen() {
                                 { color: theme.colors.white },
                             ]}
                         >
-                            Explore Books
+                            {t("favorites.empty.exploreButton")}
                         </Text>
                     </TouchableOpacity>
                 </View>

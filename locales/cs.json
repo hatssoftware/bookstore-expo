@@ -1,0 +1,207 @@
+{
+  "tabs": {
+    "home": "Domů",
+    "favorites": "Oblíbené",
+    "cart": "Košík",
+    "orders": "Objednávky",
+    "account": "Účet"
+  },
+  "account": {
+    "title": "Účet",
+    "signIn": {
+      "title": "Přihlaste se ke svému účtu",
+      "description": "Získejte přístup ke svému profilu, objednávkám, oblíbeným položkám a personalizovaným doporučením.",
+      "signInButton": "Přihlásit se",
+      "createAccountButton": "Vytvořit účet"
+    },
+    "menu": {
+      "browse": "Procházet",
+      "settings": "Nastavení",
+      "language": "Jazyk",
+      "selectLanguage": "Vybrat jazyk",
+      "help": "Pomoc a podpora",
+      "contact": "Kontaktujte nás",
+      "about": "O aplikaci",
+      "privacy": "Zásady ochrany osobních údajů",
+      "terms": "Podmínky služby",
+      "signOut": "Odhlásit se",
+      "profile": "Profil",
+      "orders": "Objednávky",
+      "favorites": "Oblíbené",
+      "paymentMethods": "Platební metody",
+      "shippingAddresses": "Dodací adresy",
+      "notifications": "Oznámení",
+      "darkMode": "Tmavý režim",
+      "version": "Verze"
+    },
+    "subtitles": {
+      "helpSupport": "Často kladené otázky a podpora",
+      "rateApp": "Sdílejte svou zpětnou vazbu",
+      "paymentOptions": "Spravovat možnosti platby",
+      "readingPreferences": "Čtenářské preference a doporučení",
+      "orderUpdates": "Aktualizace objednávek a akce",
+      "addAddress": "Přidat adresu"
+    },
+    "sections": {
+      "support": "Podpora",
+      "legal": "Právní"
+    },
+    "alerts": {
+      "signOutTitle": "Odhlásit se",
+      "signOutMessage": "Jste si jisti, že se chcete odhlásit?",
+      "cancel": "Zrušit"
+    }
+  },
+  "home": {
+    "appName": "Knihkupectví",
+    "search": {
+      "placeholder": "Vyhledat knihy, autory nebo žánry..."
+    },
+    "sections": {
+      "featured": "Doporučená kniha",
+      "bestsellers": "Bestsellery",
+      "recommendations": "Doporučeno pro vás",
+      "seeAll": "Zobrazit vše"
+    },
+    "welcome": {
+      "title": "Vítejte v knihkupectví",
+      "description": "Objevte tisíce knih, přečtěte si recenze a najděte svou další oblíbenou četbu.",
+      "signInToExplore": "Přihlaste se pro personalizovaná doporučení"
+    }
+  },
+  "cart": {
+    "title": "Košík",
+    "empty": {
+      "title": "Váš košík je prázdný",
+      "description": "Projděte si naši kolekci a přidejte některé knihy do košíku.",
+      "exploreButton": "Prozkoumat knihy"
+    },
+    "signIn": {
+      "title": "Přihlaste se pro zobrazení košíku",
+      "description": "Vytvořte si účet nebo se přihlaste pro přidávání položek do košíku a nakupování.",
+      "signInButton": "Přihlásit se"
+    },
+    "alerts": {
+      "removeItem": "Odstranit položku",
+      "removeItemMessage": "Odstranit \"{title}\" z vašeho košíku?",
+      "clearCart": "Vyprázdnit košík",
+      "clearCartMessage": "Odstranit všechny položky z vašeho košíku?",
+      "remove": "Odstranit",
+      "clear": "Vyprázdnit"
+    },
+    "total": "Celkem",
+    "checkout": "Pokračovat k platbě",
+    "quantity": "Množství",
+    "remove": "Odstranit"
+  },
+  "orders": {
+    "title": "Objednávky",
+    "empty": {
+      "title": "Zatím žádné objednávky",
+      "description": "Začněte nakupovat a uvidíte zde své objednávky. Historie nákupů bude uložena pro snadné sledování.",
+      "startShoppingButton": "Začít nakupovat"
+    },
+    "signIn": {
+      "title": "Přihlaste se pro zobrazení objednávek",
+      "description": "Vytvořte si účet nebo se přihlaste pro zobrazení historie objednávek a sledování nákupů.",
+      "signInButton": "Přihlásit se"
+    },
+    "loading": "Načítání objednávek...",
+    "status": {
+      "pending": "Čeká na vyřízení",
+      "processing": "Zpracovává se",
+      "shipped": "Odesláno",
+      "delivered": "Doručeno",
+      "cancelled": "Zrušeno"
+    }
+  },
+  "favorites": {
+    "title": "Oblíbené",
+    "empty": {
+      "title": "Zatím žádné oblíbené",
+      "description": "Začněte prozkoumat knihy a klepnutím na ikonu srdce je přidejte do oblíbených.",
+      "exploreButton": "Prozkoumat knihy"
+    },
+    "signIn": {
+      "title": "Přihlaste se pro zobrazení oblíbených",
+      "description": "Vytvořte si účet nebo se přihlaste pro uložení oblíbených knih a přístup k nim z jakéhokoli zařízení.",
+      "signInButton": "Přihlásit se"
+    }
+  },
+  "book": {
+    "addToCart": "Přidat do košíku",
+    "addToFavorites": "Přidat do oblíbených",
+    "removeFromFavorites": "Odstranit z oblíbených",
+    "description": "Popis",
+    "author": "Autor",
+    "publisher": "Vydavatel",
+    "publishedDate": "Datum vydání",
+    "pages": "Počet stran",
+    "language": "Jazyk",
+    "isbn": "ISBN",
+    "price": "Cena",
+    "inStock": "Skladem",
+    "outOfStock": "Není skladem",
+    "reviews": "Recenze",
+    "rating": "Hodnocení",
+    "loading": "Načítá se...",
+    "error": "Chyba při načítání knihy",
+    "notFound": "Kniha nenalezena",
+    "by": "od",
+    "unknownAuthor": "neznámý autor",
+    "sections": {
+      "aboutBook": "O této knize",
+      "details": "Podrobnosti"
+    },
+    "details": {
+      "pages": "Stran",
+      "year": "Rok",
+      "stock": "Sklad",
+      "rating": "Hodnocení",
+      "available": "dostupných"
+    },
+    "stock": {
+      "inStock": "Skladem",
+      "limited": "Zbývá",
+      "outOfStock": "Není skladem"
+    }
+  },
+  "common": {
+    "loading": "Načítá se...",
+    "error": "Chyba",
+    "retry": "Zkusit znovu",
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "confirm": "Potvrdit",
+    "delete": "Smazat",
+    "edit": "Upravit",
+    "add": "Přidat",
+    "remove": "Odstranit",
+    "search": "Hledat",
+    "filter": "Filtrovat",
+    "sort": "Seřadit",
+    "apply": "Použít",
+    "reset": "Resetovat",
+    "close": "Zavřít",
+    "back": "Zpět",
+    "next": "Další",
+    "previous": "Předchozí",
+    "done": "Hotovo",
+    "yes": "Ano",
+    "no": "Ne"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "cs": "Čeština",
+    "fr": "Français",
+    "de": "Deutsch"
+  },
+  "errors": {
+    "generic": "Došlo k chybě. Zkuste to prosím znovu.",
+    "network": "Chyba sítě. Zkontrolujte připojení k internetu.",
+    "notFound": "Stránka nenalezena",
+    "unauthorized": "Nemáte oprávnění k přístupu k tomuto obsahu",
+    "serverError": "Chyba serveru. Zkuste to prosím později."
+  }
+} 

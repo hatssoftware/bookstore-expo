@@ -1,3 +1,4 @@
+import { useI18n } from "@/contexts/I18nContext";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
@@ -14,6 +15,7 @@ import { Order } from "../../lib/api";
 
 export default function OrdersScreen() {
     const theme = useAppTheme();
+    const { t } = useI18n();
     const { data: session } = useSession();
     const { data: orders, isLoading, refetch, error } = useOrders();
 
@@ -152,7 +154,7 @@ export default function OrdersScreen() {
                             { color: theme.colors.text },
                         ]}
                     >
-                        Sign in to view orders
+                        {t("orders.signIn.title")}
                     </Text>
                     <Text
                         style={[
@@ -160,8 +162,7 @@ export default function OrdersScreen() {
                             { color: theme.colors.textSecondary },
                         ]}
                     >
-                        Create an account or sign in to view your order history
-                        and track your purchases.
+                        {t("orders.signIn.description")}
                     </Text>
                     <TouchableOpacity
                         style={[
@@ -178,7 +179,7 @@ export default function OrdersScreen() {
                                 { color: theme.colors.white },
                             ]}
                         >
-                            Sign In
+                            {t("orders.signIn.signInButton")}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -202,7 +203,7 @@ export default function OrdersScreen() {
                             { color: theme.colors.textSecondary },
                         ]}
                     >
-                        Loading orders...
+                        {t("orders.loading")}
                     </Text>
                 </View>
             </View>
@@ -285,7 +286,7 @@ export default function OrdersScreen() {
                             { color: theme.colors.text },
                         ]}
                     >
-                        No orders yet
+                        {t("orders.empty.title")}
                     </Text>
                     <Text
                         style={[
@@ -293,8 +294,7 @@ export default function OrdersScreen() {
                             { color: theme.colors.textSecondary },
                         ]}
                     >
-                        Start shopping to see your orders here. Your purchase
-                        history will be saved for easy tracking.
+                        {t("orders.empty.description")}
                     </Text>
                     <TouchableOpacity
                         style={[
@@ -312,7 +312,7 @@ export default function OrdersScreen() {
                                 { color: theme.colors.white },
                             ]}
                         >
-                            Start Shopping
+                            {t("orders.empty.startShoppingButton")}
                         </Text>
                     </TouchableOpacity>
                 </View>

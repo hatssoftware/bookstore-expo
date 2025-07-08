@@ -1,5 +1,6 @@
 import { BookCard } from "@/components/BookCard";
 import { SearchBar } from "@/components/SearchBar";
+import { useI18n } from "@/contexts/I18nContext";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import {
     useAddToFavorites,
@@ -27,6 +28,7 @@ import {
 
 export default function HomeScreen() {
     const theme = useAppTheme();
+    const { t } = useI18n();
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState<any[]>([]);
 
@@ -98,7 +100,7 @@ export default function HomeScreen() {
                             },
                         ]}
                     >
-                        Featured Book
+                        {t("home.sections.featured")}
                     </Text>
                 </View>
                 <BookCard
@@ -128,7 +130,7 @@ export default function HomeScreen() {
                             },
                         ]}
                     >
-                        Bestsellers
+                        {t("home.sections.bestsellers")}
                     </Text>
                     <TouchableOpacity style={styles.seeAllButton}>
                         <Text
@@ -141,7 +143,7 @@ export default function HomeScreen() {
                                 },
                             ]}
                         >
-                            See all
+                            {t("home.sections.seeAll")}
                         </Text>
                         <Ionicons
                             name="chevron-forward"
@@ -194,7 +196,7 @@ export default function HomeScreen() {
                             },
                         ]}
                     >
-                        Recommended for you
+                        {t("home.sections.recommendations")}
                     </Text>
                     <TouchableOpacity style={styles.seeAllButton}>
                         <Text
@@ -207,7 +209,7 @@ export default function HomeScreen() {
                                 },
                             ]}
                         >
-                            See all
+                            {t("home.sections.seeAll")}
                         </Text>
                         <Ionicons
                             name="chevron-forward"
@@ -222,7 +224,7 @@ export default function HomeScreen() {
                     renderItem={({ item }) => (
                         <BookCard
                             book={item}
-                            variant="compact"
+                            variant="default"
                             onFavoritePress={() =>
                                 handleFavoriteToggle(item.id)
                             }
@@ -230,8 +232,12 @@ export default function HomeScreen() {
                         />
                     )}
                     keyExtractor={(item) => item.id}
-                    showsVerticalScrollIndicator={false}
-                    scrollEnabled={false}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.horizontalList}
+                    ItemSeparatorComponent={() => (
+                        <View style={{ height: 8 }} />
+                    )}
                 />
             </View>
         );
@@ -346,7 +352,7 @@ export default function HomeScreen() {
                                     },
                                 ]}
                             >
-                                Bookstore
+                                {t("home.appName")}
                             </Text>
                         </View>
                     </View>
@@ -357,7 +363,7 @@ export default function HomeScreen() {
                     <SearchBar
                         value={searchQuery}
                         onChangeText={handleSearch}
-                        placeholder="Search for books, authors, or genres..."
+                        placeholder={t("home.search.placeholder")}
                     />
                 </View>
             </SafeAreaView>

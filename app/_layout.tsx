@@ -2,6 +2,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import { I18nProvider } from "../contexts/I18nContext";
 import { QueryProvider } from "../contexts/QueryProvider";
 import { ThemeProvider } from "../contexts/ThemeContext";
 
@@ -32,19 +33,24 @@ export default function RootLayout() {
     }
 
     return (
-        <ThemeProvider>
-            <QueryProvider>
-                <Stack screenOptions={{ headerShown: false }}>
-                    <Stack.Screen
-                        name="(tabs)"
-                        options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                        name="book/[id]"
-                        options={{ headerShown: false, presentation: "modal" }}
-                    />
-                </Stack>
-            </QueryProvider>
-        </ThemeProvider>
+        <I18nProvider>
+            <ThemeProvider>
+                <QueryProvider>
+                    <Stack screenOptions={{ headerShown: false }}>
+                        <Stack.Screen
+                            name="(tabs)"
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name="book/[id]"
+                            options={{
+                                headerShown: false,
+                                presentation: "modal",
+                            }}
+                        />
+                    </Stack>
+                </QueryProvider>
+            </ThemeProvider>
+        </I18nProvider>
     );
 }

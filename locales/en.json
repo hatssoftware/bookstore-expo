@@ -1,0 +1,207 @@
+{
+  "tabs": {
+    "home": "Home",
+    "favorites": "Favorites",
+    "cart": "Cart",
+    "orders": "Orders",
+    "account": "Account"
+  },
+  "account": {
+    "title": "Account",
+    "signIn": {
+      "title": "Sign in to your account",
+      "description": "Access your profile, orders, favorites, and personalized recommendations.",
+      "signInButton": "Sign In",
+      "createAccountButton": "Create Account"
+    },
+    "menu": {
+      "browse": "Browse",
+      "settings": "Settings",
+      "language": "Language",
+      "selectLanguage": "Select Language",
+      "help": "Help & Support",
+      "contact": "Contact Us",
+      "about": "About",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "signOut": "Sign Out",
+      "profile": "Profile",
+      "orders": "Orders",
+      "favorites": "Favorites",
+      "paymentMethods": "Payment Methods",
+      "shippingAddresses": "Shipping Addresses",
+      "notifications": "Notifications",
+      "darkMode": "Dark Mode",
+      "version": "Version"
+    },
+    "subtitles": {
+      "helpSupport": "FAQ and contact support",
+      "rateApp": "Share your feedback",
+      "paymentOptions": "Manage payment options",
+      "readingPreferences": "Reading preferences and recommendations",
+      "orderUpdates": "Order updates and promotions",
+      "addAddress": "Add address"
+    },
+    "sections": {
+      "support": "Support",
+      "legal": "Legal"
+    },
+    "alerts": {
+      "signOutTitle": "Sign Out",
+      "signOutMessage": "Are you sure you want to sign out?",
+      "cancel": "Cancel"
+    }
+  },
+  "home": {
+    "appName": "Bookstore",
+    "search": {
+      "placeholder": "Search for books, authors, or genres..."
+    },
+    "sections": {
+      "featured": "Featured Book",
+      "bestsellers": "Bestsellers",
+      "recommendations": "Recommended for you",
+      "seeAll": "See all"
+    },
+    "welcome": {
+      "title": "Welcome to the bookstore",
+      "description": "Discover thousands of books, read reviews, and find your next favorite read.",
+      "signInToExplore": "Sign in for personalized recommendations"
+    }
+  },
+  "cart": {
+    "title": "Cart",
+    "empty": {
+      "title": "Your cart is empty",
+      "description": "Browse our collection and add some books to your cart.",
+      "exploreButton": "Explore Books"
+    },
+    "signIn": {
+      "title": "Sign in to view cart",
+      "description": "Create an account or sign in to add items to your cart and make purchases.",
+      "signInButton": "Sign In"
+    },
+    "alerts": {
+      "removeItem": "Remove Item",
+      "removeItemMessage": "Remove \"{title}\" from your cart?",
+      "clearCart": "Clear Cart",
+      "clearCartMessage": "Remove all items from your cart?",
+      "remove": "Remove",
+      "clear": "Clear"
+    },
+    "total": "Total",
+    "checkout": "Checkout",
+    "quantity": "Quantity",
+    "remove": "Remove"
+  },
+  "orders": {
+    "title": "Orders",
+    "empty": {
+      "title": "No orders yet",
+      "description": "Start shopping to see your orders here. Your purchase history will be saved for easy tracking.",
+      "startShoppingButton": "Start Shopping"
+    },
+    "signIn": {
+      "title": "Sign in to view orders",
+      "description": "Create an account or sign in to view your order history and track your purchases.",
+      "signInButton": "Sign In"
+    },
+    "loading": "Loading orders...",
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    }
+  },
+  "favorites": {
+    "title": "Favorites",
+    "empty": {
+      "title": "No favorites yet",
+      "description": "Start exploring books and tap the heart icon to add them to your favorites.",
+      "exploreButton": "Explore Books"
+    },
+    "signIn": {
+      "title": "Sign in to view favorites",
+      "description": "Create an account or sign in to save your favorite books and access them from any device.",
+      "signInButton": "Sign In"
+    }
+  },
+  "book": {
+    "addToCart": "Add to Cart",
+    "addToFavorites": "Add to Favorites",
+    "removeFromFavorites": "Remove from Favorites",
+    "description": "Description",
+    "author": "Author",
+    "publisher": "Publisher",
+    "publishedDate": "Published Date",
+    "pages": "Pages",
+    "language": "Language",
+    "isbn": "ISBN",
+    "price": "Price",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "reviews": "Reviews",
+    "rating": "Rating",
+    "loading": "Loading...",
+    "error": "Error loading book",
+    "notFound": "Book not found",
+    "by": "by",
+    "unknownAuthor": "an unknown author",
+    "sections": {
+      "aboutBook": "About this book",
+      "details": "Details"
+    },
+    "details": {
+      "pages": "Pages",
+      "year": "Year",
+      "stock": "Stock",
+      "rating": "Rating",
+      "available": "available"
+    },
+    "stock": {
+      "inStock": "In Stock",
+      "limited": "Left",
+      "outOfStock": "Out of Stock"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "apply": "Apply",
+    "reset": "Reset",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "done": "Done",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "cs": "Čeština",
+    "fr": "Français",
+    "de": "Deutsch"
+  },
+  "errors": {
+    "generic": "An error occurred. Please try again.",
+    "network": "Network error. Please check your internet connection.",
+    "notFound": "Page not found",
+    "unauthorized": "You don't have permission to access this content",
+    "serverError": "Server error. Please try again later."
+  }
+} 

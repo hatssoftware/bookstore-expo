@@ -8,6 +8,8 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import LanguageSwitch from "../../components/LanguageSwitch";
+import { useI18n } from "../../contexts/I18nContext";
 import { useAppTheme } from "../../contexts/ThemeContext";
 import {
     useLogout,
@@ -93,27 +95,32 @@ function MenuItem({
 
 export default function AccountScreen() {
     const theme = useAppTheme();
+    const { t } = useI18n();
     const { data: session } = useSession();
     const { data: addresses } = useShippingAddresses();
     const logoutMutation = useLogout();
 
     const handleLogout = () => {
-        Alert.alert("Sign Out", "Are you sure you want to sign out?", [
-            { text: "Cancel", style: "cancel" },
-            {
-                text: "Sign Out",
-                style: "destructive",
-                onPress: () => {
-                    logoutMutation.mutate();
+        Alert.alert(
+            t("account.alerts.signOutTitle"),
+            t("account.alerts.signOutMessage"),
+            [
+                { text: t("account.alerts.cancel"), style: "cancel" },
+                {
+                    text: t("account.menu.signOut"),
+                    style: "destructive",
+                    onPress: () => {
+                        logoutMutation.mutate();
+                    },
                 },
-            },
-        ]);
+            ]
+        );
     };
 
     // Show sign in prompt for non-authenticated users
     if (!session?.user) {
         return (
-            <View
+            <ScrollView
                 style={[
                     styles.container,
                     { backgroundColor: theme.colors.background },
@@ -132,7 +139,7 @@ export default function AccountScreen() {
                             { color: theme.colors.text },
                         ]}
                     >
-                        Sign in to your account
+                        {t("account.signIn.title")}
                     </Text>
                     <Text
                         style={[
@@ -140,8 +147,7 @@ export default function AccountScreen() {
                             { color: theme.colors.textSecondary },
                         ]}
                     >
-                        Access your profile, orders, favorites, and personalized
-                        recommendations.
+                        {t("account.signIn.description")}
                     </Text>
 
                     <View style={styles.signInButtons}>
@@ -160,7 +166,7 @@ export default function AccountScreen() {
                                     { color: theme.colors.white },
                                 ]}
                             >
-                                Sign In
+                                {t("account.signIn.signInButton")}
                             </Text>
                         </TouchableOpacity>
 
@@ -179,7 +185,7 @@ export default function AccountScreen() {
                                     { color: theme.colors.primary },
                                 ]}
                             >
-                                Create Account
+                                {t("account.signIn.createAccountButton")}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -193,28 +199,31 @@ export default function AccountScreen() {
                             { color: theme.colors.textSecondary },
                         ]}
                     >
-                        Browse
+                        {t("account.menu.browse")}
                     </Text>
 
                     <MenuItem
                         icon="help-circle-outline"
-                        title="Help & Support"
+                        title={t("account.menu.help")}
                         onPress={() => console.log("Navigate to help")}
                     />
 
                     <MenuItem
                         icon="document-text-outline"
-                        title="Terms & Conditions"
+                        title={t("account.menu.terms")}
                         onPress={() => console.log("Navigate to terms")}
                     />
 
                     <MenuItem
                         icon="shield-checkmark-outline"
-                        title="Privacy Policy"
+                        title={t("account.menu.privacy")}
                         onPress={() => console.log("Navigate to privacy")}
                     />
+
+                    {/* Language Switch for Guest Users */}
+                    <LanguageSwitch onPress={() => {}} />
                 </View>
-            </View>
+            </ScrollView>
         );
     }
 
@@ -285,7 +294,7 @@ export default function AccountScreen() {
                                 { color: theme.colors.primary },
                             ]}
                         >
-                            Edit Profile
+                            {t("account.menu.profile")}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -298,16 +307,16 @@ export default function AccountScreen() {
                             { color: theme.colors.textSecondary },
                         ]}
                     >
-                        Account
+                        {t("account.title")}
                     </Text>
 
                     <MenuItem
                         icon="location-outline"
-                        title="Shipping Addresses"
+                        title={t("account.menu.shippingAddresses")}
                         subtitle={
                             defaultAddress
                                 ? `${defaultAddress.street}, ${defaultAddress.city}`
-                                : "Add address"
+                                : t("account.subtitles.addAddress")
                         }
                         onPress={() => console.log("Navigate to addresses")}
                         rightText={addresses?.length?.toString()}
@@ -315,8 +324,8 @@ export default function AccountScreen() {
 
                     <MenuItem
                         icon="card-outline"
-                        title="Payment Methods"
-                        subtitle="Manage payment options"
+                        title={t("account.menu.paymentMethods")}
+                        subtitle={t("account.subtitles.paymentOptions")}
                         onPress={() =>
                             console.log("Navigate to payment methods")
                         }
@@ -324,17 +333,32 @@ export default function AccountScreen() {
 
                     <MenuItem
                         icon="heart-outline"
-                        title="Preferences"
-                        subtitle="Reading preferences and recommendations"
+                        title={t("account.menu.favorites")}
+                        subtitle={t("account.subtitles.readingPreferences")}
                         onPress={() => console.log("Navigate to preferences")}
                     />
 
                     <MenuItem
                         icon="notifications-outline"
-                        title="Notifications"
-                        subtitle="Order updates and promotions"
+                        title={t("account.menu.notifications")}
+                        subtitle={t("account.subtitles.orderUpdates")}
                         onPress={() => console.log("Navigate to notifications")}
                     />
+                </View>
+
+                {/* Settings Menu */}
+                <View style={styles.menuContainer}>
+                    <Text
+                        style={[
+                            styles.menuSection,
+                            { color: theme.colors.textSecondary },
+                        ]}
+                    >
+                        {t("account.menu.settings")}
+                    </Text>
+
+                    {/* Language Switch */}
+                    <LanguageSwitch onPress={() => {}} />
                 </View>
 
                 {/* Support Menu */}
@@ -345,20 +369,20 @@ export default function AccountScreen() {
                             { color: theme.colors.textSecondary },
                         ]}
                     >
-                        Support
+                        {t("account.sections.support")}
                     </Text>
 
                     <MenuItem
                         icon="help-circle-outline"
-                        title="Help & Support"
-                        subtitle="FAQ and contact support"
+                        title={t("account.menu.help")}
+                        subtitle={t("account.subtitles.helpSupport")}
                         onPress={() => console.log("Navigate to help")}
                     />
 
                     <MenuItem
                         icon="star-outline"
                         title="Rate the App"
-                        subtitle="Share your feedback"
+                        subtitle={t("account.subtitles.rateApp")}
                         onPress={() => console.log("Open app store")}
                     />
                 </View>
@@ -371,18 +395,18 @@ export default function AccountScreen() {
                             { color: theme.colors.textSecondary },
                         ]}
                     >
-                        Legal
+                        {t("account.sections.legal")}
                     </Text>
 
                     <MenuItem
                         icon="document-text-outline"
-                        title="Terms & Conditions"
+                        title={t("account.menu.terms")}
                         onPress={() => console.log("Navigate to terms")}
                     />
 
                     <MenuItem
                         icon="shield-checkmark-outline"
-                        title="Privacy Policy"
+                        title={t("account.menu.privacy")}
                         onPress={() => console.log("Navigate to privacy")}
                     />
                 </View>
@@ -391,7 +415,7 @@ export default function AccountScreen() {
                 <View style={styles.menuContainer}>
                     <MenuItem
                         icon="log-out-outline"
-                        title="Sign Out"
+                        title={t("account.menu.signOut")}
                         onPress={handleLogout}
                         rightIcon="exit-outline"
                         iconColor={theme.colors.error}
@@ -406,7 +430,7 @@ export default function AccountScreen() {
                             { color: theme.colors.textLight },
                         ]}
                     >
-                        Version 1.0.0
+                        {t("account.menu.version")} 1.0.0
                     </Text>
                 </View>
             </ScrollView>
@@ -417,6 +441,7 @@ export default function AccountScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        paddingBottom: 60,
     },
     signInContainer: {
         flex: 1,

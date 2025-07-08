@@ -1,3 +1,4 @@
+import { useI18n } from "@/contexts/I18nContext";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
@@ -22,6 +23,7 @@ import { CartItem } from "../../lib/api";
 
 export default function CartScreen() {
     const theme = useAppTheme();
+    const { t } = useI18n();
     const { data: session } = useSession();
     const { data: cart, isLoading, error } = useCart();
 
@@ -62,12 +64,12 @@ export default function CartScreen() {
 
     const handleRemoveItem = (cartItem: CartItem) => {
         Alert.alert(
-            "Remove Item",
-            `Remove "${cartItem.book.title}" from your cart?`,
+            t("cart.alerts.removeItem"),
+            t("cart.alerts.removeItemMessage", { title: cartItem.book.title }),
             [
-                { text: "Cancel", style: "cancel" },
+                { text: t("common.cancel"), style: "cancel" },
                 {
-                    text: "Remove",
+                    text: t("cart.alerts.remove"),
                     style: "destructive",
                     onPress: () => {
                         removeFromCartMutation.mutate(cartItem.id);
@@ -78,16 +80,20 @@ export default function CartScreen() {
     };
 
     const handleClearCart = () => {
-        Alert.alert("Clear Cart", "Remove all items from your cart?", [
-            { text: "Cancel", style: "cancel" },
-            {
-                text: "Clear",
-                style: "destructive",
-                onPress: () => {
-                    clearCartMutation.mutate();
+        Alert.alert(
+            t("cart.alerts.clearCart"),
+            t("cart.alerts.clearCartMessage"),
+            [
+                { text: t("common.cancel"), style: "cancel" },
+                {
+                    text: t("cart.alerts.clear"),
+                    style: "destructive",
+                    onPress: () => {
+                        clearCartMutation.mutate();
+                    },
                 },
-            },
-        ]);
+            ]
+        );
     };
 
     const handleCheckout = () => {
@@ -206,7 +212,7 @@ export default function CartScreen() {
                             { color: theme.colors.text },
                         ]}
                     >
-                        Sign in to view cart
+                        {t("cart.signIn.title")}
                     </Text>
                     <Text
                         style={[
@@ -214,8 +220,7 @@ export default function CartScreen() {
                             { color: theme.colors.textSecondary },
                         ]}
                     >
-                        Create an account or sign in to add items to your cart
-                        and make purchases.
+                        {t("cart.signIn.description")}
                     </Text>
                     <TouchableOpacity
                         style={[
@@ -232,7 +237,7 @@ export default function CartScreen() {
                                 { color: theme.colors.white },
                             ]}
                         >
-                            Sign In
+                            {t("cart.signIn.signInButton")}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -322,7 +327,7 @@ export default function CartScreen() {
                             { color: theme.colors.text },
                         ]}
                     >
-                        Your cart is empty
+                        {t("cart.empty.title")}
                     </Text>
                     <Text
                         style={[
@@ -330,7 +335,7 @@ export default function CartScreen() {
                             { color: theme.colors.textSecondary },
                         ]}
                     >
-                        Browse our collection and add some books to your cart.
+                        {t("cart.empty.description")}
                     </Text>
                     <TouchableOpacity
                         style={[
@@ -348,7 +353,7 @@ export default function CartScreen() {
                                 { color: theme.colors.white },
                             ]}
                         >
-                            Explore Books
+                            {t("cart.empty.exploreButton")}
                         </Text>
                     </TouchableOpacity>
                 </View>

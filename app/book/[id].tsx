@@ -14,6 +14,7 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import { useI18n } from "../../contexts/I18nContext";
 import { useAppTheme } from "../../contexts/ThemeContext";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -21,6 +22,7 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 export default function BookDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const theme = useAppTheme();
+    const { t } = useI18n();
     const [isFavorite, setIsFavorite] = useState(false);
     const [quantity, setQuantity] = useState(0);
     const [isInCart, setIsInCart] = useState(false);
@@ -69,7 +71,7 @@ export default function BookDetailScreen() {
                             { color: theme.colors.text },
                         ]}
                     >
-                        Loading...
+                        {t("book.loading")}
                     </Text>
                 </View>
             </View>
@@ -117,7 +119,7 @@ export default function BookDetailScreen() {
                             { color: theme.colors.error },
                         ]}
                     >
-                        {error ? "Error loading book" : "Book not found"}
+                        {error ? t("book.error") : t("book.notFound")}
                     </Text>
                 </View>
             </View>
@@ -264,10 +266,10 @@ export default function BookDetailScreen() {
                                 },
                             ]}
                         >
-                            by{" "}
+                            {t("book.by")}{" "}
                             {book.authors
                                 .map((author) => author.name)
-                                .join(", ") || "an unknown author"}
+                                .join(", ") || t("book.unknownAuthor")}
                         </Text>
 
                         {/* Rating */}
@@ -299,7 +301,7 @@ export default function BookDetailScreen() {
                                     ]}
                                 >
                                     {getRating().toFixed(1)} ({getRatingCount()}{" "}
-                                    reviews)
+                                    {t("book.reviews")})
                                 </Text>
                             </View>
                         )}
@@ -349,10 +351,12 @@ export default function BookDetailScreen() {
                                     ]}
                                 >
                                     {book.stockQuantity > 5
-                                        ? "In Stock"
+                                        ? t("book.stock.inStock")
                                         : book.stockQuantity > 0
-                                        ? `${book.stockQuantity} Left`
-                                        : "Out of Stock"}
+                                        ? `${book.stockQuantity} ${t(
+                                              "book.stock.limited"
+                                          )}`
+                                        : t("book.stock.outOfStock")}
                                 </Text>
                             </View>
 
@@ -406,7 +410,7 @@ export default function BookDetailScreen() {
                             },
                         ]}
                     >
-                        About this book
+                        {t("book.sections.aboutBook")}
                     </Text>
                     <Text
                         style={[
@@ -437,7 +441,7 @@ export default function BookDetailScreen() {
                             },
                         ]}
                     >
-                        Details
+                        {t("book.sections.details")}
                     </Text>
 
                     <View style={styles.detailsGrid}>
@@ -452,7 +456,7 @@ export default function BookDetailScreen() {
                                     },
                                 ]}
                             >
-                                Pages
+                                {t("book.details.pages")}
                             </Text>
                             <Text
                                 style={[
@@ -479,7 +483,7 @@ export default function BookDetailScreen() {
                                     },
                                 ]}
                             >
-                                Year
+                                {t("book.details.year")}
                             </Text>
                             <Text
                                 style={[
@@ -506,7 +510,7 @@ export default function BookDetailScreen() {
                                     },
                                 ]}
                             >
-                                Stock
+                                {t("book.details.stock")}
                             </Text>
                             <Text
                                 style={[
@@ -518,7 +522,8 @@ export default function BookDetailScreen() {
                                     },
                                 ]}
                             >
-                                {book.stockQuantity} available
+                                {book.stockQuantity}{" "}
+                                {t("book.details.available")}
                             </Text>
                         </View>
 
@@ -533,7 +538,7 @@ export default function BookDetailScreen() {
                                     },
                                 ]}
                             >
-                                Rating
+                                {t("book.details.rating")}
                             </Text>
                             <Text
                                 style={[
@@ -570,7 +575,7 @@ export default function BookDetailScreen() {
                             },
                         ]}
                     >
-                        Price
+                        {t("book.price")}
                     </Text>
                     <Text
                         style={[
@@ -673,7 +678,7 @@ export default function BookDetailScreen() {
                                     },
                                 ]}
                             >
-                                Add to Cart
+                                {t("book.addToCart")}
                             </Text>
                         </TouchableOpacity>
                     )}
