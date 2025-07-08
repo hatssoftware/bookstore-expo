@@ -1,30 +1,34 @@
-import { useAppTheme } from "@/contexts/ThemeContext";
-import { Book } from "@/lib/api";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+    Image,
+    Pressable,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
+import { useAppTheme } from "../contexts/ThemeContext";
+import { Book } from "../lib/api";
 
 interface BookCardProps {
     book: Book;
-    onPress?: () => void;
     onFavoritePress?: () => void;
-    onAddToCart?: () => void;
     isFavorite?: boolean;
-    showAddToCart?: boolean;
+    variant?: "default" | "compact" | "featured";
 }
 
 export function BookCard({
     book,
-    onPress,
     onFavoritePress,
-    onAddToCart,
     isFavorite = false,
-    showAddToCart = true,
+    variant = "default",
 }: BookCardProps) {
     const theme = useAppTheme();
 
     const formatPrice = (price: string) => {
-        return `${Number(price)} CZK`;
+        return `${Number(price).toFixed(0)} CZK`;
     };
 
     const getRating = () => {
@@ -40,46 +44,56 @@ export function BookCard({
         return book.combinedRatingCount || book.bookStockRatingCount || 0;
     };
 
-    return (
-        <TouchableOpacity
-            style={[styles.container, { backgroundColor: theme.colors.card }]}
-            onPress={onPress}
-            activeOpacity={0.7}
+    const handlePress = () => {
+        router.push(`/book/${book.id}` as any);
+    };
+
+    const renderCompactCard = () => (
+        <Pressable
+            style={({ pressed }) => [
+                styles.compactContainer,
+                {
+                    backgroundColor: theme.colors.card,
+                    transform: [{ scale: pressed ? 0.98 : 1 }],
+                },
+                theme.shadows.sm,
+            ]}
+            onPress={handlePress}
         >
-            <View style={styles.imageContainer}>
+            <View style={styles.compactImageContainer}>
                 <Image
                     source={{ uri: book.imageURL }}
-                    style={styles.image}
+                    style={styles.compactImage}
                     resizeMode="cover"
                 />
-                {onFavoritePress && (
-                    <TouchableOpacity
+                <View
+                    style={[
+                        styles.priceTag,
+                        { backgroundColor: theme.colors.primary },
+                    ]}
+                >
+                    <Text
                         style={[
-                            styles.favoriteButton,
-                            { backgroundColor: theme.colors.white },
+                            styles.priceTagText,
+                            {
+                                color: theme.colors.white,
+                                fontFamily: theme.typography.fontFamily.medium,
+                            },
                         ]}
-                        onPress={onFavoritePress}
                     >
-                        <Ionicons
-                            name={isFavorite ? "heart" : "heart-outline"}
-                            size={20}
-                            color={
-                                isFavorite
-                                    ? theme.colors.error
-                                    : theme.colors.gray500
-                            }
-                        />
-                    </TouchableOpacity>
-                )}
+                        {formatPrice(book.price)}
+                    </Text>
+                </View>
             </View>
 
-            <View style={styles.content}>
+            <View style={styles.compactContent}>
                 <Text
                     style={[
-                        styles.title,
+                        styles.compactTitle,
                         {
                             color: theme.colors.text,
-                            fontSize: theme.typography.fontSize.base,
+                            fontFamily: theme.typography.fontFamily.semibold,
+                            fontSize: theme.typography.fontSize.sm,
                         },
                     ]}
                     numberOfLines={2}
@@ -89,10 +103,11 @@ export function BookCard({
 
                 <Text
                     style={[
-                        styles.author,
+                        styles.compactAuthor,
                         {
                             color: theme.colors.textSecondary,
-                            fontSize: theme.typography.fontSize.sm,
+                            fontFamily: theme.typography.fontFamily.regular,
+                            fontSize: theme.typography.fontSize.xs,
                         },
                     ]}
                     numberOfLines={1}
@@ -101,33 +116,331 @@ export function BookCard({
                         "Unknown Author"}
                 </Text>
 
+                {getRating() > 0 && (
+                    <View style={styles.compactRating}>
+                        <Ionicons
+                            name="star"
+                            size={12}
+                            color={theme.colors.accent}
+                        />
+                        <Text
+                            style={[
+                                styles.compactRatingText,
+                                {
+                                    color: theme.colors.textSecondary,
+                                    fontFamily:
+                                        theme.typography.fontFamily.medium,
+                                    fontSize: theme.typography.fontSize.xs,
+                                },
+                            ]}
+                        >
+                            {getRating().toFixed(1)}
+                        </Text>
+                    </View>
+                )}
+            </View>
+
+            {onFavoritePress && (
+                <TouchableOpacity
+                    style={[
+                        styles.compactFavoriteButton,
+                        { backgroundColor: theme.colors.background },
+                    ]}
+                    onPress={onFavoritePress}
+                >
+                    <Ionicons
+                        name={isFavorite ? "heart" : "heart-outline"}
+                        size={16}
+                        color={
+                            isFavorite
+                                ? theme.colors.accent
+                                : theme.colors.textLight
+                        }
+                    />
+                </TouchableOpacity>
+            )}
+        </Pressable>
+    );
+
+    const renderFeaturedCard = () => (
+        <Pressable
+            style={({ pressed }) => [
+                styles.featuredContainer,
+                {
+                    backgroundColor: theme.colors.card,
+                    transform: [{ scale: pressed ? 0.98 : 1 }],
+                },
+                theme.shadows.md,
+            ]}
+            onPress={handlePress}
+        >
+            <View style={styles.featuredImageContainer}>
+                <Image
+                    source={{ uri: book.imageURL }}
+                    style={styles.featuredImage}
+                    resizeMode="cover"
+                />
+                <View style={styles.featuredOverlay}>
+                    <View
+                        style={[
+                            styles.featuredPriceTag,
+                            { backgroundColor: theme.colors.accent },
+                        ]}
+                    >
+                        <Text
+                            style={[
+                                styles.featuredPriceText,
+                                {
+                                    color: theme.colors.white,
+                                    fontFamily:
+                                        theme.typography.fontFamily.bold,
+                                },
+                            ]}
+                        >
+                            {formatPrice(book.price)}
+                        </Text>
+                    </View>
+                </View>
+            </View>
+
+            <View style={styles.featuredContent}>
+                <View style={styles.featuredHeader}>
+                    <View style={styles.featuredTitleContainer}>
+                        <Text
+                            style={[
+                                styles.featuredTitle,
+                                {
+                                    color: theme.colors.text,
+                                    fontFamily:
+                                        theme.typography.fontFamily.bold,
+                                    fontSize: theme.typography.fontSize.xl,
+                                },
+                            ]}
+                            numberOfLines={2}
+                        >
+                            {book.title}
+                        </Text>
+                        <Text
+                            style={[
+                                styles.featuredAuthor,
+                                {
+                                    color: theme.colors.textSecondary,
+                                    fontFamily:
+                                        theme.typography.fontFamily.medium,
+                                    fontSize: theme.typography.fontSize.base,
+                                },
+                            ]}
+                            numberOfLines={1}
+                        >
+                            {book.authors
+                                ?.map((author) => author.name)
+                                .join(", ") || "Unknown Author"}
+                        </Text>
+                    </View>
+
+                    {onFavoritePress && (
+                        <TouchableOpacity
+                            style={[
+                                styles.featuredFavoriteButton,
+                                {
+                                    backgroundColor:
+                                        theme.colors.backgroundSecondary,
+                                },
+                            ]}
+                            onPress={onFavoritePress}
+                        >
+                            <Ionicons
+                                name={isFavorite ? "heart" : "heart-outline"}
+                                size={24}
+                                color={
+                                    isFavorite
+                                        ? theme.colors.accent
+                                        : theme.colors.textLight
+                                }
+                            />
+                        </TouchableOpacity>
+                    )}
+                </View>
+
                 {book.genres && book.genres.length > 0 && (
+                    <View style={styles.featuredGenres}>
+                        {book.genres.slice(0, 2).map((genre, index) => (
+                            <View
+                                key={genre.id || index}
+                                style={[
+                                    styles.genreTag,
+                                    {
+                                        backgroundColor:
+                                            theme.colors.backgroundSecondary,
+                                    },
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        styles.genreTagText,
+                                        {
+                                            color: theme.colors.textSecondary,
+                                            fontFamily:
+                                                theme.typography.fontFamily
+                                                    .medium,
+                                            fontSize:
+                                                theme.typography.fontSize.xs,
+                                        },
+                                    ]}
+                                >
+                                    {genre.name}
+                                </Text>
+                            </View>
+                        ))}
+                    </View>
+                )}
+
+                {getRating() > 0 && (
+                    <View style={styles.featuredRating}>
+                        <View style={styles.starsContainer}>
+                            {[...Array(5)].map((_, i) => (
+                                <Ionicons
+                                    key={i}
+                                    name={
+                                        i < Math.floor(getRating())
+                                            ? "star"
+                                            : "star-outline"
+                                    }
+                                    size={16}
+                                    color={theme.colors.accent}
+                                />
+                            ))}
+                        </View>
+                        <Text
+                            style={[
+                                styles.featuredRatingText,
+                                {
+                                    color: theme.colors.textSecondary,
+                                    fontFamily:
+                                        theme.typography.fontFamily.medium,
+                                    fontSize: theme.typography.fontSize.sm,
+                                },
+                            ]}
+                        >
+                            {getRating().toFixed(1)} ({getRatingCount()})
+                        </Text>
+                    </View>
+                )}
+            </View>
+        </Pressable>
+    );
+
+    if (variant === "compact") {
+        return renderCompactCard();
+    }
+
+    if (variant === "featured") {
+        return renderFeaturedCard();
+    }
+
+    // Default card
+    return (
+        <Pressable
+            style={({ pressed }) => [
+                styles.container,
+                {
+                    backgroundColor: theme.colors.card,
+                    transform: [{ scale: pressed ? 0.98 : 1 }],
+                },
+                theme.shadows.sm,
+            ]}
+            onPress={handlePress}
+        >
+            <View style={styles.imageContainer}>
+                <Image
+                    source={{ uri: book.imageURL }}
+                    style={styles.image}
+                    resizeMode="cover"
+                />
+                <View style={styles.imageOverlay}>
+                    <View
+                        style={[
+                            styles.stockIndicator,
+                            {
+                                backgroundColor:
+                                    book.stockQuantity > 5
+                                        ? theme.colors.success
+                                        : book.stockQuantity > 0
+                                        ? theme.colors.warning
+                                        : theme.colors.error,
+                            },
+                        ]}
+                    />
+                    {onFavoritePress && (
+                        <TouchableOpacity
+                            style={[
+                                styles.favoriteButton,
+                                { backgroundColor: theme.colors.white },
+                            ]}
+                            onPress={onFavoritePress}
+                        >
+                            <Ionicons
+                                name={isFavorite ? "heart" : "heart-outline"}
+                                size={18}
+                                color={
+                                    isFavorite
+                                        ? theme.colors.accent
+                                        : theme.colors.textLight
+                                }
+                            />
+                        </TouchableOpacity>
+                    )}
+                </View>
+            </View>
+
+            <View style={styles.content}>
+                <View style={styles.header}>
                     <Text
                         style={[
-                            styles.genre,
+                            styles.title,
                             {
-                                color: theme.colors.textLight,
-                                fontSize: theme.typography.fontSize.xs,
+                                color: theme.colors.text,
+                                fontFamily:
+                                    theme.typography.fontFamily.semibold,
+                                fontSize: theme.typography.fontSize.base,
+                            },
+                        ]}
+                        numberOfLines={2}
+                    >
+                        {book.title}
+                    </Text>
+
+                    <Text
+                        style={[
+                            styles.author,
+                            {
+                                color: theme.colors.textSecondary,
+                                fontFamily: theme.typography.fontFamily.regular,
+                                fontSize: theme.typography.fontSize.sm,
                             },
                         ]}
                         numberOfLines={1}
                     >
-                        {book.genres?.map((genre) => genre.name).join(", ")}
+                        {book.authors
+                            ?.map((author) => author.name)
+                            .join(", ") || "Unknown Author"}
                     </Text>
-                )}
+                </View>
 
                 {getRating() > 0 && (
                     <View style={styles.ratingContainer}>
                         <Ionicons
                             name="star"
                             size={14}
-                            color={theme.colors.secondary}
+                            color={theme.colors.accent}
                         />
                         <Text
                             style={[
                                 styles.rating,
                                 {
                                     color: theme.colors.textSecondary,
+                                    fontFamily:
+                                        theme.typography.fontFamily.medium,
                                     fontSize: theme.typography.fontSize.sm,
                                 },
                             ]}
@@ -140,6 +453,8 @@ export function BookCard({
                                     styles.ratingCount,
                                     {
                                         color: theme.colors.textLight,
+                                        fontFamily:
+                                            theme.typography.fontFamily.regular,
                                         fontSize: theme.typography.fontSize.xs,
                                     },
                                 ]}
@@ -156,6 +471,7 @@ export function BookCard({
                             styles.price,
                             {
                                 color: theme.colors.primary,
+                                fontFamily: theme.typography.fontFamily.bold,
                                 fontSize: theme.typography.fontSize.lg,
                             },
                         ]}
@@ -163,112 +479,100 @@ export function BookCard({
                         {formatPrice(book.price)}
                     </Text>
 
-                    {showAddToCart && onAddToCart && (
-                        <TouchableOpacity
+                    {book.stockQuantity <= 5 && book.stockQuantity > 0 && (
+                        <Text
                             style={[
-                                styles.addToCartButton,
-                                { backgroundColor: theme.colors.primary },
+                                styles.stockText,
+                                {
+                                    color: theme.colors.warning,
+                                    fontFamily:
+                                        theme.typography.fontFamily.medium,
+                                    fontSize: theme.typography.fontSize.xs,
+                                },
                             ]}
-                            onPress={onAddToCart}
                         >
-                            <Ionicons
-                                name="add"
-                                size={20}
-                                color={theme.colors.white}
-                            />
-                        </TouchableOpacity>
+                            Only {book.stockQuantity} left
+                        </Text>
+                    )}
+
+                    {book.stockQuantity === 0 && (
+                        <Text
+                            style={[
+                                styles.stockText,
+                                {
+                                    color: theme.colors.error,
+                                    fontFamily:
+                                        theme.typography.fontFamily.medium,
+                                    fontSize: theme.typography.fontSize.xs,
+                                },
+                            ]}
+                        >
+                            Out of stock
+                        </Text>
                     )}
                 </View>
-
-                {book.stockQuantity <= 5 && book.stockQuantity > 0 && (
-                    <Text
-                        style={[
-                            styles.lowStock,
-                            {
-                                color: theme.colors.warning,
-                                fontSize: theme.typography.fontSize.xs,
-                            },
-                        ]}
-                    >
-                        Only {book.stockQuantity} left in stock
-                    </Text>
-                )}
-
-                {book.stockQuantity === 0 && (
-                    <Text
-                        style={[
-                            styles.outOfStock,
-                            {
-                                color: theme.colors.error,
-                                fontSize: theme.typography.fontSize.xs,
-                            },
-                        ]}
-                    >
-                        Out of stock
-                    </Text>
-                )}
             </View>
-        </TouchableOpacity>
+        </Pressable>
     );
 }
 
 const styles = StyleSheet.create({
+    // Default card styles
     container: {
-        width: 160,
-        borderRadius: 12,
+        width: 180,
+        borderRadius: 16,
         overflow: "hidden",
-        marginBottom: 16,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
+        marginBottom: 20,
     },
     imageContainer: {
         position: "relative",
-        height: 200,
+        height: 240,
     },
     image: {
         width: "100%",
         height: "100%",
     },
-    favoriteButton: {
+    imageOverlay: {
         position: "absolute",
-        top: 8,
-        right: 8,
-        width: 32,
-        height: 32,
-        borderRadius: 16,
+        top: 12,
+        left: 12,
+        right: 12,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+    },
+    stockIndicator: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+    },
+    favoriteButton: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
         alignItems: "center",
         justifyContent: "center",
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-        elevation: 2,
     },
     content: {
-        padding: 12,
+        padding: 16,
+    },
+    header: {
+        marginBottom: 12,
     },
     title: {
-        fontWeight: "600",
-        lineHeight: 20,
+        lineHeight: 22,
         marginBottom: 4,
     },
     author: {
-        marginBottom: 4,
-    },
-    genre: {
-        marginBottom: 8,
+        lineHeight: 18,
     },
     ratingContainer: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 8,
+        marginBottom: 12,
     },
     rating: {
         marginLeft: 4,
-        fontWeight: "500",
     },
     ratingCount: {
         marginLeft: 4,
@@ -277,22 +581,158 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 4,
     },
     price: {
-        fontWeight: "700",
+        letterSpacing: -0.5,
     },
-    addToCartButton: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
+    stockText: {
+        textTransform: "uppercase",
+        letterSpacing: 0.5,
+    },
+
+    // Compact card styles
+    compactContainer: {
+        flexDirection: "row",
+        borderRadius: 12,
+        overflow: "hidden",
+        marginBottom: 12,
+        padding: 12,
+    },
+    compactImageContainer: {
+        position: "relative",
+        width: 60,
+        height: 80,
+        marginRight: 12,
+    },
+    compactImage: {
+        width: "100%",
+        height: "100%",
+        borderRadius: 8,
+    },
+    priceTag: {
+        position: "absolute",
+        bottom: -6,
+        right: -6,
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 4,
+    },
+    priceTagText: {
+        fontSize: 10,
+    },
+    compactContent: {
+        flex: 1,
+        justifyContent: "space-between",
+    },
+    compactTitle: {
+        lineHeight: 18,
+        marginBottom: 2,
+    },
+    compactAuthor: {
+        lineHeight: 16,
+        marginBottom: 4,
+    },
+    compactRating: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    compactRatingText: {
+        marginLeft: 2,
+    },
+    compactFavoriteButton: {
+        position: "absolute",
+        top: 8,
+        right: 8,
+        width: 28,
+        height: 28,
+        borderRadius: 14,
         alignItems: "center",
         justifyContent: "center",
     },
-    lowStock: {
-        fontWeight: "500",
+
+    // Featured card styles
+    featuredContainer: {
+        borderRadius: 20,
+        overflow: "hidden",
+        marginBottom: 24,
     },
-    outOfStock: {
-        fontWeight: "600",
+    featuredImageContainer: {
+        position: "relative",
+        height: 200,
+    },
+    featuredImage: {
+        width: "100%",
+        height: "100%",
+    },
+    featuredOverlay: {
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 80,
+        backgroundColor: "rgba(0,0,0,0.4)",
+        justifyContent: "flex-end",
+        padding: 16,
+    },
+    featuredPriceTag: {
+        alignSelf: "flex-start",
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 8,
+    },
+    featuredPriceText: {
+        fontSize: 16,
+    },
+    featuredContent: {
+        padding: 20,
+    },
+    featuredHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+        marginBottom: 12,
+    },
+    featuredTitleContainer: {
+        flex: 1,
+        marginRight: 12,
+    },
+    featuredTitle: {
+        lineHeight: 28,
+        marginBottom: 4,
+    },
+    featuredAuthor: {
+        lineHeight: 22,
+    },
+    featuredFavoriteButton: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    featuredGenres: {
+        flexDirection: "row",
+        marginBottom: 16,
+    },
+    genreTag: {
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 6,
+        marginRight: 8,
+    },
+    genreTagText: {
+        textTransform: "uppercase",
+        letterSpacing: 0.5,
+    },
+    featuredRating: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+    },
+    starsContainer: {
+        flexDirection: "row",
+    },
+    featuredRatingText: {
+        marginLeft: 8,
     },
 });

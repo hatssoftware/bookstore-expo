@@ -1,8 +1,10 @@
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
     FlatList,
-    RefreshControl,
+    SafeAreaView,
     ScrollView,
+    StatusBar,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -12,7 +14,6 @@ import { BookCard } from "../../components/BookCard";
 import { SearchBar } from "../../components/SearchBar";
 import { useAppTheme } from "../../contexts/ThemeContext";
 import {
-    useAddToCart,
     useAddToFavorites,
     useFavorites,
     useRecommendations,
@@ -21,207 +22,303 @@ import {
     useSession,
     useTopBooks,
 } from "../../hooks/useApi";
-import { Book } from "../../lib/api";
 
 export default function HomeScreen() {
     const theme = useAppTheme();
     const [searchQuery, setSearchQuery] = useState("");
-    const [refreshing, setRefreshing] = useState(false);
+    const [searchResults, setSearchResults] = useState([]);
 
     // API hooks
     const { data: session } = useSession();
-    const {
-        data: topBooks,
-        isLoading: topBooksLoading,
-        refetch: refetchTopBooks,
-    } = useTopBooks();
-    const { data: searchResults, isLoading: searchLoading } =
-        useSearchBooks(searchQuery);
-    const { data: recommendations, refetch: refetchRecommendations } =
-        useRecommendations();
+    const { data: topBooks } = useTopBooks();
+    const { data: searchData } = useSearchBooks(searchQuery);
+    const { data: recommendations } = useRecommendations();
     const { data: favorites } = useFavorites(session?.user?.id || "");
 
     // Mutations
-    const addToCartMutation = useAddToCart();
     const addToFavoritesMutation = useAddToFavorites();
     const removeFromFavoritesMutation = useRemoveFromFavorites();
 
-    const onRefresh = async () => {
-        setRefreshing(true);
-        try {
-            await Promise.all([refetchTopBooks(), refetchRecommendations()]);
-        } finally {
-            setRefreshing(false);
+    const isAuthenticated = !!session?.user;
+
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+        if (query.trim()) {
+            setSearchResults(searchData?.books || []);
+        } else {
+            setSearchResults([]);
         }
     };
 
-    const handleAddToCart = (book: Book) => {
-        addToCartMutation.mutate(
-            { bookId: book.id, quantity: 1 },
-            {
-                onSuccess: () => {
-                    // Could show a toast notification here
-                    console.log(`Added ${book.title} to cart`);
-                },
-                onError: (error) => {
-                    console.error("Failed to add to cart:", error);
-                },
-            }
-        );
-    };
-
-    const handleFavoriteToggle = (book: Book) => {
+    const handleFavoriteToggle = (bookId: string) => {
         if (!session?.user?.id) return;
 
-        const isFavorite = favorites?.some((fav) => fav.id === book.id);
+        const isFavorite = favorites?.some((fav) => fav.id === bookId);
 
         if (isFavorite) {
             removeFromFavoritesMutation.mutate({
                 userId: session.user.id,
-                bookId: book.id,
+                bookId: bookId,
             });
         } else {
             addToFavoritesMutation.mutate({
                 userId: session.user.id,
-                bookId: book.id,
+                bookId: bookId,
             });
         }
     };
 
-    const isFavorite = (book: Book) => {
-        return favorites?.some((fav) => fav.id === book.id) || false;
+    const isFavorite = (bookId: string) => {
+        return favorites?.some((fav) => fav.id === bookId) || false;
     };
 
-    const renderBookCard = ({ item }: { item: Book }) => (
-        <BookCard
-            book={item}
-            onPress={() => {
-                // Navigate to book details
-                console.log("Navigate to book details:", item.id);
-            }}
-            onFavoritePress={
-                session?.user ? () => handleFavoriteToggle(item) : undefined
-            }
-            onAddToCart={() => handleAddToCart(item)}
-            isFavorite={isFavorite(item)}
-            showAddToCart={item.stockQuantity > 0}
-        />
-    );
+    const renderFeaturedSection = () => {
+        if (!topBooks || topBooks.length === 0) return null;
 
-    const renderSection = (
-        title: string,
-        books: Book[] | undefined,
-        loading: boolean
-    ) => {
-        if (!books || books.length === 0) {
+        const featuredBook = topBooks[0];
+
+        return (
+            <View style={styles.section}>
+                <Text
+                    style={[
+                        styles.sectionTitle,
+                        {
+                            color: theme.colors.text,
+                            fontFamily: theme.typography.fontFamily.bold,
+                        },
+                    ]}
+                >
+                    Featured Book
+                </Text>
+                <BookCard
+                    book={featuredBook}
+                    variant="featured"
+                    onFavoritePress={() =>
+                        handleFavoriteToggle(featuredBook.id)
+                    }
+                    isFavorite={isFavorite(featuredBook.id)}
+                />
+            </View>
+        );
+    };
+
+    const renderBestsellersSection = () => {
+        if (!topBooks || topBooks.length === 0) return null;
+
+        return (
+            <View style={styles.section}>
+                <View style={styles.sectionHeader}>
+                    <Text
+                        style={[
+                            styles.sectionTitle,
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
+                        ]}
+                    >
+                        Bestsellers
+                    </Text>
+                    <TouchableOpacity style={styles.seeAllButton}>
+                        <Text
+                            style={[
+                                styles.seeAllText,
+                                {
+                                    color: theme.colors.secondary,
+                                    fontFamily:
+                                        theme.typography.fontFamily.medium,
+                                },
+                            ]}
+                        >
+                            See all
+                        </Text>
+                        <Ionicons
+                            name="chevron-forward"
+                            size={16}
+                            color={theme.colors.secondary}
+                        />
+                    </TouchableOpacity>
+                </View>
+
+                <FlatList
+                    data={topBooks.slice(1)} // Skip first book as it's featured
+                    renderItem={({ item }) => (
+                        <BookCard
+                            book={item}
+                            variant="default"
+                            onFavoritePress={() =>
+                                handleFavoriteToggle(item.id)
+                            }
+                            isFavorite={isFavorite(item.id)}
+                        />
+                    )}
+                    keyExtractor={(item) => item.id}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.horizontalList}
+                />
+            </View>
+        );
+    };
+
+    const renderRecommendationsSection = () => {
+        if (
+            !isAuthenticated ||
+            !recommendations?.books ||
+            recommendations.books.length === 0
+        ) {
             return null;
         }
 
         return (
             <View style={styles.section}>
-                <Text
-                    style={[styles.sectionTitle, { color: theme.colors.text }]}
-                >
-                    {title}
-                </Text>
+                <View style={styles.sectionHeader}>
+                    <Text
+                        style={[
+                            styles.sectionTitle,
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
+                        ]}
+                    >
+                        Recommended for you
+                    </Text>
+                    <TouchableOpacity style={styles.seeAllButton}>
+                        <Text
+                            style={[
+                                styles.seeAllText,
+                                {
+                                    color: theme.colors.secondary,
+                                    fontFamily:
+                                        theme.typography.fontFamily.medium,
+                                },
+                            ]}
+                        >
+                            See all
+                        </Text>
+                        <Ionicons
+                            name="chevron-forward"
+                            size={16}
+                            color={theme.colors.secondary}
+                        />
+                    </TouchableOpacity>
+                </View>
+
                 <FlatList
-                    data={books}
-                    renderItem={renderBookCard}
-                    keyExtractor={(item) => item.id}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.booksList}
-                    ItemSeparatorComponent={() => (
-                        <View style={{ width: 12 }} />
+                    data={recommendations.books}
+                    renderItem={({ item }) => (
+                        <BookCard
+                            book={item}
+                            variant="compact"
+                            onFavoritePress={() =>
+                                handleFavoriteToggle(item.id)
+                            }
+                            isFavorite={isFavorite(item.id)}
+                        />
                     )}
+                    keyExtractor={(item) => item.id}
+                    showsVerticalScrollIndicator={false}
+                    scrollEnabled={false}
                 />
             </View>
         );
     };
 
-    // Show search results if searching
-    if (searchQuery.length >= 2) {
+    const renderSearchResults = () => {
+        if (!searchQuery || searchResults.length === 0) return null;
+
+        return (
+            <View style={styles.section}>
+                <Text
+                    style={[
+                        styles.sectionTitle,
+                        {
+                            color: theme.colors.text,
+                            fontFamily: theme.typography.fontFamily.bold,
+                        },
+                    ]}
+                >
+                    Search Results
+                </Text>
+                <FlatList
+                    data={searchResults}
+                    renderItem={({ item }) => (
+                        <BookCard
+                            book={item}
+                            variant="compact"
+                            onFavoritePress={() =>
+                                handleFavoriteToggle(item.id)
+                            }
+                            isFavorite={isFavorite(item.id)}
+                        />
+                    )}
+                    keyExtractor={(item) => item.id}
+                    showsVerticalScrollIndicator={false}
+                    scrollEnabled={false}
+                />
+            </View>
+        );
+    };
+
+    const renderWelcomeSection = () => {
+        if (isAuthenticated) return null;
+
         return (
             <View
                 style={[
-                    styles.container,
-                    { backgroundColor: theme.colors.background },
+                    styles.welcomeSection,
+                    { backgroundColor: theme.colors.surface },
                 ]}
             >
-                <SearchBar
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                    placeholder="Search books..."
-                />
-
-                <ScrollView style={styles.content}>
-                    {searchLoading ? (
+                <View style={styles.welcomeContent}>
+                    <Text
+                        style={[
+                            styles.welcomeTitle,
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
+                        ]}
+                    >
+                        Welcome to Our Bookstore
+                    </Text>
+                    <Text
+                        style={[
+                            styles.welcomeDescription,
+                            {
+                                color: theme.colors.textSecondary,
+                                fontFamily: theme.typography.fontFamily.regular,
+                            },
+                        ]}
+                    >
+                        Discover thousands of books, create your personal
+                        library, and get personalized recommendations.
+                    </Text>
+                    <TouchableOpacity
+                        style={[
+                            styles.signInButton,
+                            { backgroundColor: theme.colors.accent },
+                        ]}
+                        onPress={() => console.log("Navigate to sign in")}
+                    >
                         <Text
                             style={[
-                                styles.loadingText,
-                                { color: theme.colors.textSecondary },
+                                styles.signInButtonText,
+                                {
+                                    color: theme.colors.white,
+                                    fontFamily:
+                                        theme.typography.fontFamily.bold,
+                                },
                             ]}
                         >
-                            Searching...
+                            Sign In to Get Started
                         </Text>
-                    ) : searchResults && searchResults.length > 0 ? (
-                        <View style={styles.searchResults}>
-                            <Text
-                                style={[
-                                    styles.sectionTitle,
-                                    { color: theme.colors.text },
-                                ]}
-                            >
-                                Search Results ({searchResults.length})
-                            </Text>
-                            <View style={styles.searchGrid}>
-                                {searchResults.map((book) => (
-                                    <View
-                                        key={book.id}
-                                        style={styles.searchBookItem}
-                                    >
-                                        <BookCard
-                                            book={book}
-                                            onPress={() =>
-                                                console.log(
-                                                    "Navigate to book details:",
-                                                    book.id
-                                                )
-                                            }
-                                            onFavoritePress={
-                                                session?.user
-                                                    ? () =>
-                                                          handleFavoriteToggle(
-                                                              book
-                                                          )
-                                                    : undefined
-                                            }
-                                            onAddToCart={() =>
-                                                handleAddToCart(book)
-                                            }
-                                            isFavorite={isFavorite(book)}
-                                            showAddToCart={
-                                                book.stockQuantity > 0
-                                            }
-                                        />
-                                    </View>
-                                ))}
-                            </View>
-                        </View>
-                    ) : (
-                        <Text
-                            style={[
-                                styles.noResultsText,
-                                { color: theme.colors.textSecondary },
-                            ]}
-                        >
-                            No books found for "{searchQuery}"
-                        </Text>
-                    )}
-                </ScrollView>
+                    </TouchableOpacity>
+                </View>
             </View>
         );
-    }
+    };
 
     return (
         <View
@@ -230,78 +327,62 @@ export default function HomeScreen() {
                 { backgroundColor: theme.colors.background },
             ]}
         >
-            <SearchBar
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholder="Search books..."
+            <StatusBar
+                barStyle="dark-content"
+                backgroundColor={theme.colors.background}
             />
 
-            <ScrollView
-                style={styles.content}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                    />
-                }
-            >
-                {session?.user &&
-                    renderSection(
-                        "Recommended for You",
-                        recommendations?.books,
-                        false
-                    )}
-                {renderSection("Bestsellers", topBooks, topBooksLoading)}
-
-                {/* Welcome message for non-authenticated users */}
-                {!session?.user && (
-                    <View
-                        style={[
-                            styles.welcomeSection,
-                            {
-                                backgroundColor:
-                                    theme.colors.backgroundSecondary,
-                            },
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                styles.welcomeTitle,
-                                { color: theme.colors.text },
-                            ]}
-                        >
-                            Welcome to Bookstore!
-                        </Text>
-                        <Text
-                            style={[
-                                styles.welcomeText,
-                                { color: theme.colors.textSecondary },
-                            ]}
-                        >
-                            Sign in to get personalized recommendations and
-                            access your favorites and cart.
-                        </Text>
-                        <TouchableOpacity
-                            style={[
-                                styles.signInButton,
-                                { backgroundColor: theme.colors.primary },
-                            ]}
-                            onPress={() => {
-                                // Navigate to sign in
-                                console.log("Navigate to sign in");
-                            }}
-                        >
+            <SafeAreaView>
+                {/* Header */}
+                <View
+                    style={[
+                        styles.header,
+                        { backgroundColor: theme.colors.surface },
+                    ]}
+                >
+                    <View style={styles.headerContent}>
+                        <View>
                             <Text
                                 style={[
-                                    styles.signInButtonText,
-                                    { color: theme.colors.white },
+                                    styles.headerTitle,
+                                    {
+                                        color: theme.colors.text,
+                                        fontFamily:
+                                            theme.typography.fontFamily.bold,
+                                    },
                                 ]}
                             >
-                                Sign In
+                                Bookstore
                             </Text>
-                        </TouchableOpacity>
+                        </View>
                     </View>
-                )}
+                </View>
+
+                {/* Search */}
+                <View
+                    style={[
+                        styles.searchSection,
+                        { backgroundColor: theme.colors.surface },
+                    ]}
+                >
+                    <SearchBar
+                        value={searchQuery}
+                        onChangeText={handleSearch}
+                        placeholder="Search for books, authors, or genres..."
+                    />
+                </View>
+            </SafeAreaView>
+
+            <ScrollView
+                style={styles.scrollView}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContent}
+            >
+                {renderWelcomeSection()}
+                {renderSearchResults()}
+                {!searchQuery && renderFeaturedSection()}
+                {!searchQuery && renderBestsellersSection()}
+                {!searchQuery && renderRecommendationsSection()}
             </ScrollView>
         </View>
     );
@@ -311,69 +392,100 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    content: {
+    header: {
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+    },
+    headerContent: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    greeting: {
+        fontSize: 14,
+        marginBottom: 2,
+    },
+    headerTitle: {
+        fontSize: 24,
+    },
+    notificationButton: {
+        position: "relative",
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    notificationBadge: {
+        position: "absolute",
+        top: 8,
+        right: 8,
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+    },
+    searchSection: {
+        paddingHorizontal: 20,
+        paddingBottom: 16,
+    },
+    scrollView: {
         flex: 1,
     },
-    section: {
-        marginBottom: 24,
-    },
-    sectionTitle: {
-        fontSize: 20,
-        fontWeight: "700",
-        marginHorizontal: 16,
-        marginBottom: 16,
-    },
-    booksList: {
-        paddingHorizontal: 16,
-    },
-    loadingText: {
-        textAlign: "center",
-        marginTop: 32,
-        fontSize: 16,
-    },
-    searchResults: {
-        padding: 16,
-    },
-    searchGrid: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "space-between",
-    },
-    searchBookItem: {
-        width: "48%",
-        marginBottom: 16,
-    },
-    noResultsText: {
-        textAlign: "center",
-        marginTop: 32,
-        fontSize: 16,
-        paddingHorizontal: 32,
+    scrollContent: {
+        paddingBottom: 32,
     },
     welcomeSection: {
-        margin: 16,
-        padding: 20,
-        borderRadius: 12,
+        marginHorizontal: 20,
+        marginTop: 16,
+        borderRadius: 16,
+        padding: 24,
+    },
+    welcomeContent: {
         alignItems: "center",
+        textAlign: "center",
     },
     welcomeTitle: {
         fontSize: 24,
-        fontWeight: "700",
-        marginBottom: 8,
         textAlign: "center",
+        marginBottom: 12,
     },
-    welcomeText: {
+    welcomeDescription: {
         fontSize: 16,
         textAlign: "center",
         lineHeight: 24,
-        marginBottom: 20,
+        marginBottom: 24,
     },
     signInButton: {
-        paddingHorizontal: 24,
-        paddingVertical: 12,
-        borderRadius: 8,
+        paddingHorizontal: 32,
+        paddingVertical: 16,
+        borderRadius: 12,
     },
     signInButtonText: {
         fontSize: 16,
-        fontWeight: "600",
+    },
+    section: {
+        marginTop: 32,
+    },
+    sectionHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingHorizontal: 20,
+        marginBottom: 16,
+    },
+    sectionTitle: {
+        fontSize: 20,
+    },
+    seeAllButton: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    seeAllText: {
+        fontSize: 14,
+        marginRight: 4,
+    },
+    horizontalList: {
+        paddingLeft: 20,
+        paddingRight: 8,
     },
 });

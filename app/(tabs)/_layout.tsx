@@ -1,57 +1,125 @@
-import { useAppTheme } from "@/contexts/ThemeContext";
-import { useCart } from "@/hooks/useApi";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { Text, View } from "react-native";
+import { useAppTheme } from "../../contexts/ThemeContext";
+import { useCart } from "../../hooks/useApi";
+
+function TabBarIcon(props: {
+    name: React.ComponentProps<typeof Ionicons>["name"];
+    focused: boolean;
+    color: string;
+}) {
+    const theme = useAppTheme();
+
+    return (
+        <View
+            style={{
+                alignItems: "center",
+                justifyContent: "center",
+                width: 28,
+                height: 28,
+            }}
+        >
+            <Ionicons
+                size={props.focused ? 24 : 22}
+                name={props.name}
+                color={props.focused ? theme.colors.accent : props.color}
+                style={{
+                    marginBottom: -2,
+                }}
+            />
+        </View>
+    );
+}
+
+function TabBarBadge({ count }: { count: number }) {
+    const theme = useAppTheme();
+
+    if (count === 0) return null;
+
+    return (
+        <View
+            style={{
+                position: "absolute",
+                right: -6,
+                top: -2,
+                backgroundColor: theme.colors.accent,
+                borderRadius: 10,
+                minWidth: 20,
+                height: 20,
+                justifyContent: "center",
+                alignItems: "center",
+                paddingHorizontal: 6,
+            }}
+        >
+            <Text
+                style={{
+                    color: theme.colors.white,
+                    fontSize: 11,
+                    fontFamily: theme.typography.fontFamily.bold,
+                    textAlign: "center",
+                }}
+            >
+                {count > 99 ? "99+" : count.toString()}
+            </Text>
+        </View>
+    );
+}
 
 export default function TabLayout() {
     const theme = useAppTheme();
     const { data: cart } = useCart();
-
-    // Calculate total items in cart for badge
     const cartItemCount =
-        cart?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
+        cart?.items?.reduce(
+            (sum: number, item: any) => sum + item.quantity,
+            0
+        ) || 0;
 
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: theme.colors.primary,
-                tabBarInactiveTintColor: theme.colors.gray500,
+                tabBarActiveTintColor: theme.colors.accent,
+                tabBarInactiveTintColor: theme.colors.textLight,
+                headerShown: false,
                 tabBarStyle: {
-                    backgroundColor: theme.colors.white,
-                    borderTopColor: theme.colors.border,
+                    backgroundColor: theme.colors.surface,
                     borderTopWidth: 1,
-                    paddingTop: 8,
-                    paddingBottom: 8,
+                    borderTopColor: theme.colors.border,
                     height: 88,
+                    paddingTop: 8,
+                    paddingBottom: 24,
+                    paddingHorizontal: 8,
+                    elevation: 8,
+                    shadowColor: theme.colors.black,
+                    shadowOffset: { width: 0, height: -2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 8,
                 },
                 tabBarLabelStyle: {
-                    fontSize: theme.typography.fontSize.xs,
-                    fontWeight: theme.typography.fontWeight.medium,
+                    fontSize: 12,
+                    fontFamily: theme.typography.fontFamily.medium,
                     marginTop: 4,
+                    textAlign: "center",
                 },
-                headerStyle: {
-                    backgroundColor: theme.colors.white,
-                    borderBottomColor: theme.colors.border,
-                    borderBottomWidth: 1,
+                tabBarItemStyle: {
+                    paddingTop: 4,
+                    borderRadius: 12,
+                    marginHorizontal: 2,
                 },
-                headerTitleStyle: {
-                    fontSize: theme.typography.fontSize.lg,
-                    fontWeight: theme.typography.fontWeight.bold,
-                    color: theme.colors.text,
+                tabBarIconStyle: {
+                    marginBottom: 0,
                 },
-                headerTintColor: theme.colors.primary,
             }}
         >
             <Tabs.Screen
                 name="index"
                 options={{
                     title: "Home",
-                    headerTitle: "Bookstore",
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons
-                            name="home-outline"
-                            size={size}
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabBarIcon
+                            name={focused ? "home" : "home-outline"}
                             color={color}
+                            focused={focused}
                         />
                     ),
                 }}
@@ -60,12 +128,11 @@ export default function TabLayout() {
                 name="favorites"
                 options={{
                     title: "Favorites",
-                    headerTitle: "My Favorites",
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons
-                            name="heart-outline"
-                            size={size}
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabBarIcon
+                            name={focused ? "heart" : "heart-outline"}
                             color={color}
+                            focused={focused}
                         />
                     ),
                 }}
@@ -74,36 +141,27 @@ export default function TabLayout() {
                 name="cart"
                 options={{
                     title: "Cart",
-                    headerTitle: "Shopping Cart",
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons
-                            name="bag-outline"
-                            size={size}
-                            color={color}
-                        />
+                    tabBarIcon: ({ color, focused }) => (
+                        <View style={{ position: "relative" }}>
+                            <TabBarIcon
+                                name={focused ? "bag" : "bag-outline"}
+                                color={color}
+                                focused={focused}
+                            />
+                            <TabBarBadge count={cartItemCount} />
+                        </View>
                     ),
-                    tabBarBadge:
-                        cartItemCount > 0
-                            ? cartItemCount.toString()
-                            : undefined,
-                    tabBarBadgeStyle: {
-                        backgroundColor: theme.colors.secondary,
-                        color: theme.colors.white,
-                        fontSize: theme.typography.fontSize.xs,
-                        fontWeight: theme.typography.fontWeight.bold,
-                    },
                 }}
             />
             <Tabs.Screen
                 name="orders"
                 options={{
                     title: "Orders",
-                    headerTitle: "My Orders",
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons
-                            name="receipt-outline"
-                            size={size}
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabBarIcon
+                            name={focused ? "receipt" : "receipt-outline"}
                             color={color}
+                            focused={focused}
                         />
                     ),
                 }}
@@ -112,12 +170,11 @@ export default function TabLayout() {
                 name="account"
                 options={{
                     title: "Account",
-                    headerTitle: "My Account",
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons
-                            name="person-outline"
-                            size={size}
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabBarIcon
+                            name={focused ? "person" : "person-outline"}
                             color={color}
+                            focused={focused}
                         />
                     ),
                 }}
