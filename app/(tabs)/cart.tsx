@@ -1,23 +1,24 @@
-import { ApiErrorBoundary } from "@/components/ApiErrorBoundary";
-import { useI18n } from "@/contexts/I18nContext";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React from "react";
 import {
-    Alert,
     Image,
+    SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
 } from "react-native";
+import { useI18n } from "../../contexts/I18nContext";
 import { useAppTheme } from "../../contexts/ThemeContext";
+import { useUser } from "../../contexts/UserContext";
 import {
     useCart,
     useCheckout,
     useClearCart,
     useRemoveFromCart,
-    useSession,
+    useShippingAddresses,
     useUpdateCartItem,
 } from "../../hooks/useApi";
 import { CartItem } from "../../lib/api";
@@ -25,34 +26,25 @@ import { CartItem } from "../../lib/api";
 export default function CartScreen() {
     const theme = useAppTheme();
     const { t } = useI18n();
-    const { data: session } = useSession();
-    const { data: cart, isLoading, error } = useCart();
-
-    // Mutations
+    const { user, isAuthenticated } = useUser();
+    const { data: cart, isLoading: cartLoading, error } = useCart();
+    const { data: addresses } = useShippingAddresses();
     const updateCartItemMutation = useUpdateCartItem();
     const removeFromCartMutation = useRemoveFromCart();
     const clearCartMutation = useClearCart();
     const checkoutMutation = useCheckout();
 
+    const defaultAddress = addresses?.find((addr) => addr.isDefault);
+
     const formatPrice = (price: number) => {
-        return `${price.toFixed(2)} CZK`;
+        return new Intl.NumberFormat("cs-CZ", {
+            style: "currency",
+            currency: "CZK",
+        }).format(price);
     };
 
-    const getTotalPrice = () => {
-        if (!cart?.items) return 0;
-        return cart.items.reduce(
-            (total, item) => total + item.book.price * item.quantity,
-            0
-        );
-    };
-
-    const getTotalItems = () => {
-        if (!cart?.items) return 0;
-        return cart.items.reduce((total, item) => total + item.quantity, 0);
-    };
-
-    const handleQuantityChange = (cartItem: CartItem, newQuantity: number) => {
-        if (newQuantity === 0) {
+    const handleUpdateQuantity = (cartItem: CartItem, newQuantity: number) => {
+        if (newQuantity <= 0) {
             handleRemoveItem(cartItem);
             return;
         }
@@ -64,58 +56,44 @@ export default function CartScreen() {
     };
 
     const handleRemoveItem = (cartItem: CartItem) => {
-        Alert.alert(
-            t("cart.alerts.removeItem"),
-            t("cart.alerts.removeItemMessage", { title: cartItem.book.title }),
-            [
-                { text: t("common.cancel"), style: "cancel" },
-                {
-                    text: t("cart.alerts.remove"),
-                    style: "destructive",
-                    onPress: () => {
-                        removeFromCartMutation.mutate(cartItem.id);
-                    },
-                },
-            ]
-        );
+        removeFromCartMutation.mutate(cartItem.id);
     };
 
     const handleClearCart = () => {
-        Alert.alert(
-            t("cart.alerts.clearCart"),
-            t("cart.alerts.clearCartMessage"),
-            [
-                { text: t("common.cancel"), style: "cancel" },
-                {
-                    text: t("cart.alerts.clear"),
-                    style: "destructive",
-                    onPress: () => {
-                        clearCartMutation.mutate();
-                    },
-                },
-            ]
-        );
+        clearCartMutation.mutate();
     };
 
     const handleCheckout = () => {
-        // For now, just log. In a real app, this would navigate to checkout flow
-        console.log("Navigate to checkout");
+        if (!cart || cart.items.length === 0) return;
+
+        checkoutMutation.mutate({
+            shippingAddressId: defaultAddress?.id || "",
+            paymentMethod: "card", // Default payment method
+        });
     };
 
-    const renderCartItem = (item: CartItem) => (
+    const renderCartItem = ({ item }: { item: CartItem }) => (
         <View
-            key={item.id}
-            style={[styles.cartItem, { backgroundColor: theme.colors.card }]}
+            style={[
+                styles.cartItem,
+                { backgroundColor: theme.colors.surface },
+                theme.shadows.sm,
+            ]}
         >
             <Image
                 source={{ uri: item.book.imageURL }}
                 style={styles.bookImage}
                 resizeMode="cover"
             />
-
             <View style={styles.itemDetails}>
                 <Text
-                    style={[styles.bookTitle, { color: theme.colors.text }]}
+                    style={[
+                        styles.bookTitle,
+                        {
+                            color: theme.colors.text,
+                            fontFamily: theme.typography.fontFamily.bold,
+                        },
+                    ]}
                     numberOfLines={2}
                 >
                     {item.book.title}
@@ -123,84 +101,95 @@ export default function CartScreen() {
                 <Text
                     style={[
                         styles.bookAuthor,
-                        { color: theme.colors.textSecondary },
+                        {
+                            color: theme.colors.textSecondary,
+                            fontFamily: theme.typography.fontFamily.regular,
+                        },
                     ]}
-                    numberOfLines={1}
                 >
-                    {item.book.authors?.map((author) => author.name).join(", ")}
+                    {item.book.authors
+                        ?.map((author) => author.name)
+                        .join(", ") || ""}
                 </Text>
                 <Text
-                    style={[styles.bookPrice, { color: theme.colors.primary }]}
+                    style={[
+                        styles.bookPrice,
+                        {
+                            color: theme.colors.primary,
+                            fontFamily: theme.typography.fontFamily.bold,
+                        },
+                    ]}
                 >
                     {formatPrice(item.book.price)}
                 </Text>
             </View>
-
-            <View style={styles.quantityContainer}>
-                <View style={styles.quantityControls}>
-                    <TouchableOpacity
-                        style={[
-                            styles.quantityButton,
-                            { backgroundColor: theme.colors.gray200 },
-                        ]}
-                        onPress={() =>
-                            handleQuantityChange(item, item.quantity - 1)
-                        }
-                    >
-                        <Ionicons
-                            name="remove"
-                            size={16}
-                            color={theme.colors.text}
-                        />
-                    </TouchableOpacity>
-
-                    <Text
-                        style={[styles.quantity, { color: theme.colors.text }]}
-                    >
-                        {item.quantity}
-                    </Text>
-
-                    <TouchableOpacity
-                        style={[
-                            styles.quantityButton,
-                            { backgroundColor: theme.colors.gray200 },
-                        ]}
-                        onPress={() =>
-                            handleQuantityChange(item, item.quantity + 1)
-                        }
-                    >
-                        <Ionicons
-                            name="add"
-                            size={16}
-                            color={theme.colors.text}
-                        />
-                    </TouchableOpacity>
-                </View>
-
+            <View style={styles.quantityControls}>
                 <TouchableOpacity
-                    style={styles.removeButton}
-                    onPress={() => handleRemoveItem(item)}
+                    style={[
+                        styles.quantityButton,
+                        { backgroundColor: theme.colors.gray100 },
+                    ]}
+                    onPress={() =>
+                        handleUpdateQuantity(item, item.quantity - 1)
+                    }
                 >
                     <Ionicons
-                        name="trash-outline"
-                        size={20}
-                        color={theme.colors.error}
+                        name="remove"
+                        size={16}
+                        color={theme.colors.text}
                     />
+                </TouchableOpacity>
+                <Text
+                    style={[
+                        styles.quantityText,
+                        {
+                            color: theme.colors.text,
+                            fontFamily: theme.typography.fontFamily.medium,
+                        },
+                    ]}
+                >
+                    {item.quantity}
+                </Text>
+                <TouchableOpacity
+                    style={[
+                        styles.quantityButton,
+                        { backgroundColor: theme.colors.gray100 },
+                    ]}
+                    onPress={() =>
+                        handleUpdateQuantity(item, item.quantity + 1)
+                    }
+                >
+                    <Ionicons name="add" size={16} color={theme.colors.text} />
                 </TouchableOpacity>
             </View>
         </View>
     );
 
     // Show sign in prompt for non-authenticated users
-    if (!session?.user) {
+    if (!isAuthenticated) {
         return (
-            <View
+            <SafeAreaView
                 style={[
                     styles.container,
                     { backgroundColor: theme.colors.background },
                 ]}
             >
-                <View style={styles.emptyStateContainer}>
+                {/* Header */}
+                <View style={styles.header}>
+                    <Text
+                        style={[
+                            styles.headerTitle,
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
+                        ]}
+                    >
+                        {t("cart.title")}
+                    </Text>
+                </View>
+
+                <View style={styles.emptyContainer}>
                     <Ionicons
                         name="bag-outline"
                         size={64}
@@ -223,13 +212,14 @@ export default function CartScreen() {
                     >
                         {t("cart.signIn.description")}
                     </Text>
+
                     <TouchableOpacity
                         style={[
                             styles.signInButton,
                             { backgroundColor: theme.colors.primary },
                         ]}
                         onPress={() => {
-                            console.log("Navigate to sign in");
+                            router.push("/auth/login");
                         }}
                     >
                         <Text
@@ -242,12 +232,12 @@ export default function CartScreen() {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </SafeAreaView>
         );
     }
 
     // Show loading state
-    if (isLoading) {
+    if (cartLoading) {
         return (
             <View
                 style={[
@@ -255,10 +245,10 @@ export default function CartScreen() {
                     { backgroundColor: theme.colors.background },
                 ]}
             >
-                <View style={styles.loadingContainer}>
+                <View style={styles.emptyContainer}>
                     <Text
                         style={[
-                            styles.loadingText,
+                            styles.emptyText,
                             { color: theme.colors.textSecondary },
                         ]}
                     >
@@ -269,62 +259,31 @@ export default function CartScreen() {
         );
     }
 
-    // Show error state
-    if (error) {
-        // Check if this is an API unavailability error
-        if ((error as any)?.isApiUnavailable) {
-            return (
-                <ApiErrorBoundary>
-                    <></>
-                </ApiErrorBoundary>
-            );
-        }
-
+    // Show empty cart state
+    if (!cart || !cart.items || cart.items.length === 0) {
         return (
-            <View
+            <SafeAreaView
                 style={[
                     styles.container,
                     { backgroundColor: theme.colors.background },
                 ]}
             >
-                <View style={styles.errorContainer}>
-                    <Ionicons
-                        name="alert-circle-outline"
-                        size={64}
-                        color={theme.colors.error}
-                        style={styles.emptyIcon}
-                    />
+                {/* Header */}
+                <View style={styles.header}>
                     <Text
                         style={[
-                            styles.errorTitle,
-                            { color: theme.colors.error },
+                            styles.headerTitle,
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
                         ]}
                     >
-                        Failed to load cart
-                    </Text>
-                    <Text
-                        style={[
-                            styles.errorText,
-                            { color: theme.colors.textSecondary },
-                        ]}
-                    >
-                        There was an error loading your cart. Please try again.
+                        {t("cart.title")}
                     </Text>
                 </View>
-            </View>
-        );
-    }
 
-    // Show empty cart
-    if (!cart?.items || cart.items.length === 0) {
-        return (
-            <View
-                style={[
-                    styles.container,
-                    { backgroundColor: theme.colors.background },
-                ]}
-            >
-                <View style={styles.emptyStateContainer}>
+                <View style={styles.emptyContainer}>
                     <Ionicons
                         name="bag-outline"
                         size={64}
@@ -347,90 +306,106 @@ export default function CartScreen() {
                     >
                         {t("cart.empty.description")}
                     </Text>
+
                     <TouchableOpacity
                         style={[
-                            styles.exploreButton,
+                            styles.signInButton,
                             { backgroundColor: theme.colors.primary },
                         ]}
                         onPress={() => {
-                            // Navigate to home tab
-                            console.log("Navigate to home tab");
+                            router.push("/(tabs)");
                         }}
                     >
                         <Text
                             style={[
-                                styles.exploreButtonText,
+                                styles.signInButtonText,
                                 { color: theme.colors.white },
                             ]}
                         >
-                            {t("cart.empty.exploreButton")}
+                            {t("cart.empty.browseButton")}
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </SafeAreaView>
         );
     }
 
+    const totalPrice = cart.items.reduce(
+        (sum, item) => sum + item.book.price * item.quantity,
+        0
+    );
+
     return (
-        <View
+        <SafeAreaView
             style={[
                 styles.container,
                 { backgroundColor: theme.colors.background },
             ]}
         >
+            {/* Header */}
             <View style={styles.header}>
                 <Text
                     style={[
-                        styles.itemCount,
-                        { color: theme.colors.textSecondary },
+                        styles.headerTitle,
+                        {
+                            color: theme.colors.text,
+                            fontFamily: theme.typography.fontFamily.bold,
+                        },
                     ]}
                 >
-                    {getTotalItems()} {getTotalItems() === 1 ? "item" : "items"}
+                    {t("cart.title")}
                 </Text>
-                <TouchableOpacity onPress={handleClearCart}>
-                    <Text
-                        style={[
-                            styles.clearButton,
-                            { color: theme.colors.error },
-                        ]}
-                    >
-                        Clear Cart
-                    </Text>
-                </TouchableOpacity>
+                <Text
+                    style={[
+                        styles.itemCount,
+                        {
+                            color: theme.colors.textSecondary,
+                            fontFamily: theme.typography.fontFamily.regular,
+                        },
+                    ]}
+                >
+                    {cart.items.length} {t("cart.items")}
+                </Text>
             </View>
 
             <ScrollView
                 style={styles.cartList}
                 showsVerticalScrollIndicator={false}
             >
-                {cart.items.map(renderCartItem)}
+                {cart.items.map((item) => (
+                    <View key={item.id}>{renderCartItem({ item })}</View>
+                ))}
             </ScrollView>
 
+            {/* Cart Summary */}
             <View
                 style={[
-                    styles.footer,
-                    {
-                        backgroundColor: theme.colors.card,
-                        borderTopColor: theme.colors.border,
-                    },
+                    styles.cartSummary,
+                    { backgroundColor: theme.colors.surface },
                 ]}
             >
-                <View style={styles.totalContainer}>
+                <View style={styles.totalRow}>
                     <Text
                         style={[
                             styles.totalLabel,
-                            { color: theme.colors.textSecondary },
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
                         ]}
                     >
-                        Total:
+                        {t("cart.total")}
                     </Text>
                     <Text
                         style={[
                             styles.totalPrice,
-                            { color: theme.colors.text },
+                            {
+                                color: theme.colors.primary,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
                         ]}
                     >
-                        {formatPrice(getTotalPrice())}
+                        {formatPrice(totalPrice)}
                     </Text>
                 </View>
 
@@ -440,18 +415,24 @@ export default function CartScreen() {
                         { backgroundColor: theme.colors.primary },
                     ]}
                     onPress={handleCheckout}
+                    disabled={checkoutMutation.isPending}
                 >
                     <Text
                         style={[
                             styles.checkoutButtonText,
-                            { color: theme.colors.white },
+                            {
+                                color: theme.colors.white,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
                         ]}
                     >
-                        Proceed to Checkout
+                        {checkoutMutation.isPending
+                            ? t("cart.processingCheckout")
+                            : t("cart.checkout")}
                     </Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -463,66 +444,55 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingHorizontal: 16,
-        paddingVertical: 12,
+        paddingHorizontal: 20,
+        paddingVertical: 16,
         borderBottomWidth: 1,
         borderBottomColor: "#e5e7eb",
     },
-    itemCount: {
-        fontSize: 14,
-        fontWeight: "500",
+    headerTitle: {
+        fontSize: 24,
     },
-    clearButton: {
+    itemCount: {
         fontSize: 14,
         fontWeight: "600",
     },
     cartList: {
         flex: 1,
-        padding: 16,
+        paddingHorizontal: 20,
     },
     cartItem: {
         flexDirection: "row",
-        padding: 12,
-        marginBottom: 12,
+        padding: 16,
+        marginVertical: 8,
         borderRadius: 12,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-        elevation: 1,
     },
     bookImage: {
         width: 60,
         height: 80,
-        borderRadius: 6,
+        borderRadius: 8,
+        marginRight: 16,
     },
     itemDetails: {
         flex: 1,
-        marginLeft: 12,
         justifyContent: "space-between",
     },
     bookTitle: {
         fontSize: 16,
         fontWeight: "600",
-        lineHeight: 20,
+        marginBottom: 4,
     },
     bookAuthor: {
         fontSize: 14,
-        marginTop: 4,
+        marginBottom: 8,
     },
     bookPrice: {
         fontSize: 16,
         fontWeight: "700",
-        marginTop: 4,
-    },
-    quantityContainer: {
-        alignItems: "center",
-        justifyContent: "space-between",
     },
     quantityControls: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 12,
+        gap: 12,
     },
     quantityButton: {
         width: 32,
@@ -531,21 +501,49 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
     },
-    quantity: {
+    quantityText: {
         fontSize: 16,
         fontWeight: "600",
-        marginHorizontal: 12,
         minWidth: 24,
         textAlign: "center",
     },
-    removeButton: {
-        padding: 8,
+    emptyContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingHorizontal: 32,
     },
-    footer: {
+    emptyIcon: {
+        marginBottom: 24,
+    },
+    emptyTitle: {
+        fontSize: 20,
+        fontWeight: "600",
+        textAlign: "center",
+        marginBottom: 8,
+    },
+    emptyText: {
+        fontSize: 16,
+        textAlign: "center",
+        lineHeight: 24,
+        marginBottom: 32,
+    },
+    signInButton: {
+        paddingVertical: 16,
+        paddingHorizontal: 32,
+        borderRadius: 12,
+        alignItems: "center",
+    },
+    signInButtonText: {
+        fontSize: 16,
+        fontWeight: "600",
+    },
+    cartSummary: {
         padding: 16,
         borderTopWidth: 1,
+        borderTopColor: "#e5e7eb",
     },
-    totalContainer: {
+    totalRow: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
@@ -561,76 +559,11 @@ const styles = StyleSheet.create({
     },
     checkoutButton: {
         paddingVertical: 16,
-        borderRadius: 8,
+        borderRadius: 12,
         alignItems: "center",
     },
     checkoutButtonText: {
         fontSize: 18,
-        fontWeight: "600",
-    },
-    emptyStateContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        paddingHorizontal: 32,
-    },
-    emptyIcon: {
-        marginBottom: 16,
-    },
-    emptyTitle: {
-        fontSize: 24,
         fontWeight: "700",
-        marginBottom: 8,
-        textAlign: "center",
-    },
-    emptyText: {
-        fontSize: 16,
-        textAlign: "center",
-        lineHeight: 24,
-        marginBottom: 24,
-    },
-    signInButton: {
-        paddingHorizontal: 24,
-        paddingVertical: 12,
-        borderRadius: 8,
-    },
-    signInButtonText: {
-        fontSize: 16,
-        fontWeight: "600",
-    },
-    exploreButton: {
-        paddingHorizontal: 24,
-        paddingVertical: 12,
-        borderRadius: 8,
-    },
-    exploreButtonText: {
-        fontSize: 16,
-        fontWeight: "600",
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    loadingText: {
-        fontSize: 16,
-    },
-    errorContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        paddingHorizontal: 32,
-    },
-    errorTitle: {
-        fontSize: 20,
-        fontWeight: "700",
-        marginBottom: 8,
-        textAlign: "center",
-    },
-    errorText: {
-        fontSize: 16,
-        textAlign: "center",
-        lineHeight: 24,
-        marginBottom: 24,
     },
 });

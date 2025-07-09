@@ -1,6 +1,7 @@
 import { ApiErrorBoundary } from "@/components/ApiErrorBoundary";
 import { useI18n } from "@/contexts/I18nContext";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React from "react";
 import {
     RefreshControl,
@@ -11,13 +12,14 @@ import {
     View,
 } from "react-native";
 import { useAppTheme } from "../../contexts/ThemeContext";
-import { useOrders, useSession } from "../../hooks/useApi";
+import { useOrders } from "../../hooks/useApi";
+import { useUser } from "../../contexts/UserContext";
 import { Order } from "../../lib/api";
 
 export default function OrdersScreen() {
     const theme = useAppTheme();
     const { t } = useI18n();
-    const { data: session } = useSession();
+    const { user, isAuthenticated } = useUser();
     const { data: orders, isLoading, refetch, error } = useOrders();
 
     const formatPrice = (price: number) => {
@@ -134,7 +136,7 @@ export default function OrdersScreen() {
     );
 
     // Show sign in prompt for non-authenticated users
-    if (!session?.user) {
+    if (!isAuthenticated || !user) {
         return (
             <View
                 style={[
@@ -171,7 +173,7 @@ export default function OrdersScreen() {
                             { backgroundColor: theme.colors.primary },
                         ]}
                         onPress={() => {
-                            console.log("Navigate to sign in");
+                            router.push("/auth/login");
                         }}
                     >
                         <Text
@@ -215,9 +217,13 @@ export default function OrdersScreen() {
     if (error) {
         // Check if this is an API unavailability error
         if ((error as any)?.isApiUnavailable) {
-            return <ApiErrorBoundary><></></ApiErrorBoundary>;
+            return (
+                <ApiErrorBoundary>
+                    <></>
+                </ApiErrorBoundary>
+            );
         }
-        
+
         return (
             <View
                 style={[

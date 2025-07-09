@@ -1,18 +1,5 @@
 import { ApiErrorBoundary } from "@/components/ApiErrorBoundary";
-import { BookCard } from "@/components/BookCard";
 import { SearchBar } from "@/components/SearchBar";
-import { useApiStatus } from "@/contexts/ApiStatusContext";
-import { useI18n } from "@/contexts/I18nContext";
-import { useAppTheme } from "@/contexts/ThemeContext";
-import {
-    useAddToFavorites,
-    useFavorites,
-    useRecommendations,
-    useRemoveFromFavorites,
-    useSearchBooks,
-    useSession,
-    useTopBooks,
-} from "@/hooks/useApi";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -27,6 +14,19 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import { BookCard } from "../../components/BookCard";
+import { useApiStatus } from "../../contexts/ApiStatusContext";
+import { useI18n } from "../../contexts/I18nContext";
+import { useAppTheme } from "../../contexts/ThemeContext";
+import { useUser } from "../../contexts/UserContext";
+import {
+    useAddToFavorites,
+    useFavorites,
+    useRecommendations,
+    useRemoveFromFavorites,
+    useSearchBooks,
+    useTopBooks,
+} from "../../hooks/useApi";
 
 export default function HomeScreen() {
     const theme = useAppTheme();
@@ -36,7 +36,7 @@ export default function HomeScreen() {
     const [searchResults, setSearchResults] = useState<any[]>([]);
 
     // API hooks
-    const { data: session } = useSession();
+    const { user, isAuthenticated } = useUser();
     const {
         data: topBooks,
         isLoading: topBooksLoading,
@@ -44,13 +44,11 @@ export default function HomeScreen() {
     } = useTopBooks();
     const { data: searchData } = useSearchBooks(searchQuery);
     const { data: recommendations } = useRecommendations();
-    const { data: favorites } = useFavorites(session?.user?.id || "");
+    const { data: favorites } = useFavorites(user?.id || "");
 
     // Mutations
     const addToFavoritesMutation = useAddToFavorites();
     const removeFromFavoritesMutation = useRemoveFromFavorites();
-
-    const isAuthenticated = !!session?.user;
 
     const handleSearch = (query: string) => {
         setSearchQuery(query);
@@ -69,25 +67,47 @@ export default function HomeScreen() {
     }, [searchData, searchQuery]);
 
     const handleFavoriteToggle = (bookId: string) => {
-        if (!session?.user?.id) return;
+        if (!user?.id) return;
 
-        const isFavorite = favorites?.some((fav) => fav.id === bookId);
+        const isFavorite = favorites?.some((fav) => fav.book.id === bookId);
 
         if (isFavorite) {
-            removeFromFavoritesMutation.mutate({
-                userId: session.user.id,
-                bookId: bookId,
-            });
+            removeFromFavoritesMutation.mutate(
+                {
+                    userId: user.id,
+                    bookId: bookId,
+                },
+                {
+                    onError: (error: any) => {
+                        if (error?.status === 401) {
+                            console.log(
+                                "[HomeScreen] Favorites feature temporarily unavailable due to server authentication issue"
+                            );
+                        }
+                    },
+                }
+            );
         } else {
-            addToFavoritesMutation.mutate({
-                userId: session.user.id,
-                bookId: bookId,
-            });
+            addToFavoritesMutation.mutate(
+                {
+                    userId: user.id,
+                    bookId: bookId,
+                },
+                {
+                    onError: (error: any) => {
+                        if (error?.status === 401) {
+                            console.log(
+                                "[HomeScreen] Favorites feature temporarily unavailable due to server authentication issue"
+                            );
+                        }
+                    },
+                }
+            );
         }
     };
 
     const isFavorite = (bookId: string) => {
-        return favorites?.some((fav) => fav.id === bookId) || false;
+        return favorites?.some((fav) => fav.book.id === bookId) || false;
     };
 
     const renderFeaturedSection = () => {

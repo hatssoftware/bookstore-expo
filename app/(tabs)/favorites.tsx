@@ -1,5 +1,6 @@
 import { ApiErrorBoundary } from "@/components/ApiErrorBoundary";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React from "react";
 import {
     FlatList,
@@ -12,24 +13,25 @@ import {
 import { BookCard } from "../../components/BookCard";
 import { useI18n } from "../../contexts/I18nContext";
 import { useAppTheme } from "../../contexts/ThemeContext";
+import { useUser } from "../../contexts/UserContext";
 import {
+    FavoriteItem,
     useAddToCart,
     useFavorites,
     useRemoveFromFavorites,
-    useSession,
 } from "../../hooks/useApi";
 import { Book } from "../../lib/api";
 
 export default function FavoritesScreen() {
     const theme = useAppTheme();
     const { t } = useI18n();
-    const { data: session } = useSession();
+    const { user, isAuthenticated } = useUser();
     const {
         data: favorites,
         isLoading,
         refetch,
         error,
-    } = useFavorites(session?.user?.id || "");
+    } = useFavorites(user?.id || "");
 
     // Mutations
     const addToCartMutation = useAddToCart();
@@ -50,31 +52,43 @@ export default function FavoritesScreen() {
     };
 
     const handleRemoveFromFavorites = (book: Book) => {
-        if (!session?.user?.id) return;
+        if (!user?.id) return;
 
-        removeFromFavoritesMutation.mutate({
-            userId: session.user.id,
-            bookId: book.id,
-        });
+        removeFromFavoritesMutation.mutate(
+            {
+                userId: user.id,
+                bookId: book.id,
+            },
+            {
+                onError: (error: any) => {
+                    if (error?.status === 401) {
+                        console.log(
+                            "[FavoritesScreen] Remove favorites feature temporarily unavailable due to server authentication issue"
+                        );
+                    }
+                },
+            }
+        );
     };
 
-    const renderBookCard = ({ item }: { item: Book }) => (
+    const renderBookCard = ({ item }: { item: FavoriteItem }) => (
         <View style={styles.bookItem}>
             <BookCard
-                book={item}
+                book={item.book}
                 onPress={() => {
-                    console.log("Navigate to book details:", item.id);
+                    console.log("Navigate to book details:", item.book.id);
+                    router.push(`/book/${item.book.id}`);
                 }}
-                onFavoritePress={() => handleRemoveFromFavorites(item)}
-                onAddToCart={() => handleAddToCart(item)}
+                onFavoritePress={() => handleRemoveFromFavorites(item.book)}
+                onAddToCart={() => handleAddToCart(item.book)}
                 isFavorite={true}
-                showAddToCart={item.stockQuantity > 0}
+                showAddToCart={item.book.stockQuantity > 0}
             />
         </View>
     );
 
     // Show sign in prompt for non-authenticated users
-    if (!session?.user) {
+    if (!isAuthenticated || !user) {
         return (
             <View
                 style={[
@@ -111,7 +125,7 @@ export default function FavoritesScreen() {
                             { backgroundColor: theme.colors.primary },
                         ]}
                         onPress={() => {
-                            console.log("Navigate to sign in");
+                            router.push("/auth/login");
                         }}
                     >
                         <Text
@@ -155,9 +169,13 @@ export default function FavoritesScreen() {
     if (error) {
         // Check if this is an API unavailability error
         if ((error as any)?.isApiUnavailable) {
-            return <ApiErrorBoundary><></></ApiErrorBoundary>;
+            return (
+                <ApiErrorBoundary>
+                    <></>
+                </ApiErrorBoundary>
+            );
         }
-        
+
         return (
             <View
                 style={[

@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React from "react";
 import {
     Alert,
@@ -11,11 +12,8 @@ import {
 import LanguageSwitch from "../../components/LanguageSwitch";
 import { useI18n } from "../../contexts/I18nContext";
 import { useAppTheme } from "../../contexts/ThemeContext";
-import {
-    useLogout,
-    useSession,
-    useShippingAddresses,
-} from "../../hooks/useApi";
+import { useUser } from "../../contexts/UserContext";
+import { useShippingAddresses } from "../../hooks/useApi";
 
 interface MenuItemProps {
     icon: string;
@@ -39,22 +37,28 @@ function MenuItem({
     const theme = useAppTheme();
 
     return (
-        <TouchableOpacity
-            style={[styles.menuItem, { backgroundColor: theme.colors.card }]}
-            onPress={onPress}
-        >
+        <TouchableOpacity style={styles.menuItem} onPress={onPress}>
             <View style={styles.menuItemLeft}>
-                <Ionicons
-                    name={icon as any}
-                    size={24}
-                    color={iconColor || theme.colors.primary}
-                    style={styles.menuItemIcon}
-                />
-                <View style={styles.menuItemText}>
+                <View
+                    style={[
+                        styles.menuItemIcon,
+                        { backgroundColor: theme.colors.gray100 },
+                    ]}
+                >
+                    <Ionicons
+                        name={icon as any}
+                        size={20}
+                        color={iconColor || theme.colors.text}
+                    />
+                </View>
+                <View style={styles.menuItemContent}>
                     <Text
                         style={[
                             styles.menuItemTitle,
-                            { color: theme.colors.text },
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.medium,
+                            },
                         ]}
                     >
                         {title}
@@ -63,7 +67,11 @@ function MenuItem({
                         <Text
                             style={[
                                 styles.menuItemSubtitle,
-                                { color: theme.colors.textSecondary },
+                                {
+                                    color: theme.colors.textSecondary,
+                                    fontFamily:
+                                        theme.typography.fontFamily.regular,
+                                },
                             ]}
                         >
                             {subtitle}
@@ -71,13 +79,15 @@ function MenuItem({
                     )}
                 </View>
             </View>
-
             <View style={styles.menuItemRight}>
                 {rightText && (
                     <Text
                         style={[
                             styles.menuItemRightText,
-                            { color: theme.colors.textSecondary },
+                            {
+                                color: theme.colors.textSecondary,
+                                fontFamily: theme.typography.fontFamily.regular,
+                            },
                         ]}
                     >
                         {rightText}
@@ -85,8 +95,8 @@ function MenuItem({
                 )}
                 <Ionicons
                     name={rightIcon as any}
-                    size={20}
-                    color={theme.colors.gray400}
+                    size={16}
+                    color={theme.colors.textLight}
                 />
             </View>
         </TouchableOpacity>
@@ -96,9 +106,8 @@ function MenuItem({
 export default function AccountScreen() {
     const theme = useAppTheme();
     const { t } = useI18n();
-    const { data: session } = useSession();
+    const { user, isAuthenticated, logout, isLoading } = useUser();
     const { data: addresses } = useShippingAddresses();
-    const logoutMutation = useLogout();
 
     const handleLogout = () => {
         Alert.alert(
@@ -109,8 +118,12 @@ export default function AccountScreen() {
                 {
                     text: t("account.menu.signOut"),
                     style: "destructive",
-                    onPress: () => {
-                        logoutMutation.mutate();
+                    onPress: async () => {
+                        try {
+                            await logout();
+                        } catch (error) {
+                            console.log("Logout error:", error);
+                        }
                     },
                 },
             ]
@@ -118,7 +131,7 @@ export default function AccountScreen() {
     };
 
     // Show sign in prompt for non-authenticated users
-    if (!session?.user) {
+    if (!isAuthenticated && !isLoading) {
         return (
             <ScrollView
                 style={[
@@ -157,7 +170,7 @@ export default function AccountScreen() {
                                 { backgroundColor: theme.colors.primary },
                             ]}
                             onPress={() => {
-                                console.log("Navigate to sign in");
+                                router.push("/auth/login");
                             }}
                         >
                             <Text
@@ -176,7 +189,7 @@ export default function AccountScreen() {
                                 { borderColor: theme.colors.primary },
                             ]}
                             onPress={() => {
-                                console.log("Navigate to register");
+                                router.push("/auth/register");
                             }}
                         >
                             <Text
@@ -192,176 +205,6 @@ export default function AccountScreen() {
                 </View>
 
                 {/* Guest options */}
-                <View style={styles.guestMenu}>
-                    <Text
-                        style={[
-                            styles.menuSection,
-                            { color: theme.colors.textSecondary },
-                        ]}
-                    >
-                        {t("account.menu.browse")}
-                    </Text>
-
-                    <MenuItem
-                        icon="help-circle-outline"
-                        title={t("account.menu.help")}
-                        onPress={() => console.log("Navigate to help")}
-                    />
-
-                    <MenuItem
-                        icon="document-text-outline"
-                        title={t("account.menu.terms")}
-                        onPress={() => console.log("Navigate to terms")}
-                    />
-
-                    <MenuItem
-                        icon="shield-checkmark-outline"
-                        title={t("account.menu.privacy")}
-                        onPress={() => console.log("Navigate to privacy")}
-                    />
-
-                    {/* Language Switch for Guest Users */}
-                    <LanguageSwitch onPress={() => {}} />
-                </View>
-            </ScrollView>
-        );
-    }
-
-    const defaultAddress = addresses?.find((addr) => addr.isDefault);
-
-    return (
-        <View
-            style={[
-                styles.container,
-                { backgroundColor: theme.colors.background },
-            ]}
-        >
-            <ScrollView showsVerticalScrollIndicator={false}>
-                {/* User Profile Section */}
-                <View
-                    style={[
-                        styles.profileSection,
-                        { backgroundColor: theme.colors.card },
-                    ]}
-                >
-                    <View style={styles.profileInfo}>
-                        <View
-                            style={[
-                                styles.avatar,
-                                { backgroundColor: theme.colors.primary },
-                            ]}
-                        >
-                            <Text
-                                style={[
-                                    styles.avatarText,
-                                    { color: theme.colors.white },
-                                ]}
-                            >
-                                {session.user.name.charAt(0).toUpperCase()}
-                            </Text>
-                        </View>
-
-                        <View style={styles.userInfo}>
-                            <Text
-                                style={[
-                                    styles.userName,
-                                    { color: theme.colors.text },
-                                ]}
-                            >
-                                {session.user.name}
-                            </Text>
-                            <Text
-                                style={[
-                                    styles.userEmail,
-                                    { color: theme.colors.textSecondary },
-                                ]}
-                            >
-                                {session.user.email}
-                            </Text>
-                        </View>
-                    </View>
-
-                    <TouchableOpacity
-                        style={[
-                            styles.editProfileButton,
-                            { borderColor: theme.colors.primary },
-                        ]}
-                        onPress={() => console.log("Navigate to edit profile")}
-                    >
-                        <Text
-                            style={[
-                                styles.editProfileText,
-                                { color: theme.colors.primary },
-                            ]}
-                        >
-                            {t("account.menu.profile")}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* Account Menu */}
-                <View style={styles.menuContainer}>
-                    <Text
-                        style={[
-                            styles.menuSection,
-                            { color: theme.colors.textSecondary },
-                        ]}
-                    >
-                        {t("account.title")}
-                    </Text>
-
-                    <MenuItem
-                        icon="location-outline"
-                        title={t("account.menu.shippingAddresses")}
-                        subtitle={
-                            defaultAddress
-                                ? `${defaultAddress.street}, ${defaultAddress.city}`
-                                : t("account.subtitles.addAddress")
-                        }
-                        onPress={() => console.log("Navigate to addresses")}
-                        rightText={addresses?.length?.toString()}
-                    />
-
-                    <MenuItem
-                        icon="card-outline"
-                        title={t("account.menu.paymentMethods")}
-                        subtitle={t("account.subtitles.paymentOptions")}
-                        onPress={() =>
-                            console.log("Navigate to payment methods")
-                        }
-                    />
-
-                    <MenuItem
-                        icon="heart-outline"
-                        title={t("account.menu.favorites")}
-                        subtitle={t("account.subtitles.readingPreferences")}
-                        onPress={() => console.log("Navigate to preferences")}
-                    />
-
-                    <MenuItem
-                        icon="notifications-outline"
-                        title={t("account.menu.notifications")}
-                        subtitle={t("account.subtitles.orderUpdates")}
-                        onPress={() => console.log("Navigate to notifications")}
-                    />
-                </View>
-
-                {/* Settings Menu */}
-                <View style={styles.menuContainer}>
-                    <Text
-                        style={[
-                            styles.menuSection,
-                            { color: theme.colors.textSecondary },
-                        ]}
-                    >
-                        {t("account.menu.settings")}
-                    </Text>
-
-                    {/* Language Switch */}
-                    <LanguageSwitch onPress={() => {}} />
-                </View>
-
-                {/* Support Menu */}
                 <View style={styles.menuContainer}>
                     <Text
                         style={[
@@ -411,52 +254,267 @@ export default function AccountScreen() {
                     />
                 </View>
 
-                {/* Sign Out */}
+                {/* Language */}
                 <View style={styles.menuContainer}>
-                    <MenuItem
-                        icon="log-out-outline"
-                        title={t("account.menu.signOut")}
-                        onPress={handleLogout}
-                        rightIcon="exit-outline"
-                        iconColor={theme.colors.error}
-                    />
-                </View>
-
-                {/* App Version */}
-                <View style={styles.versionContainer}>
                     <Text
                         style={[
-                            styles.versionText,
-                            { color: theme.colors.textLight },
+                            styles.menuSection,
+                            { color: theme.colors.textSecondary },
                         ]}
                     >
-                        {t("account.menu.version")} 1.0.0
+                        {t("account.menu.language")}
                     </Text>
+                    <LanguageSwitch onPress={() => {}} />
                 </View>
             </ScrollView>
-        </View>
+        );
+    }
+
+    // Show loading state
+    if (isLoading) {
+        return (
+            <View
+                style={[
+                    styles.container,
+                    { backgroundColor: theme.colors.background },
+                ]}
+            >
+                <View style={styles.signInContainer}>
+                    <Text
+                        style={[
+                            styles.signInText,
+                            { color: theme.colors.textSecondary },
+                        ]}
+                    >
+                        Loading...
+                    </Text>
+                </View>
+            </View>
+        );
+    }
+
+    // Authenticated user view
+    return (
+        <ScrollView
+            style={[
+                styles.container,
+                { backgroundColor: theme.colors.background },
+            ]}
+        >
+            {/* User Profile Header */}
+            <View style={styles.profileHeader}>
+                <View style={styles.profileInfo}>
+                    <View
+                        style={[
+                            styles.profileAvatar,
+                            { backgroundColor: theme.colors.primary },
+                        ]}
+                    >
+                        <Text
+                            style={[
+                                styles.profileAvatarText,
+                                {
+                                    color: theme.colors.white,
+                                    fontFamily:
+                                        theme.typography.fontFamily.bold,
+                                },
+                            ]}
+                        >
+                            {user?.name?.charAt(0).toUpperCase() || "U"}
+                        </Text>
+                    </View>
+                    <View style={styles.profileDetails}>
+                        <Text
+                            style={[
+                                styles.profileName,
+                                {
+                                    color: theme.colors.text,
+                                    fontFamily:
+                                        theme.typography.fontFamily.bold,
+                                },
+                            ]}
+                        >
+                            {user?.name || "User"}
+                        </Text>
+                        <Text
+                            style={[
+                                styles.profileEmail,
+                                {
+                                    color: theme.colors.textSecondary,
+                                    fontFamily:
+                                        theme.typography.fontFamily.regular,
+                                },
+                            ]}
+                        >
+                            {user?.email}
+                        </Text>
+                    </View>
+                </View>
+            </View>
+
+            {/* Account Menu */}
+            <View style={styles.menuContainer}>
+                <MenuItem
+                    icon="person-outline"
+                    title={t("account.menu.profile")}
+                    onPress={() => console.log("Navigate to profile")}
+                />
+
+                <MenuItem
+                    icon="receipt-outline"
+                    title={t("account.menu.orders")}
+                    onPress={() => console.log("Navigate to orders")}
+                />
+
+                <MenuItem
+                    icon="heart-outline"
+                    title={t("account.menu.favorites")}
+                    onPress={() => console.log("Navigate to favorites")}
+                />
+
+                <MenuItem
+                    icon="card-outline"
+                    title={t("account.menu.paymentMethods")}
+                    subtitle={t("account.subtitles.paymentOptions")}
+                    onPress={() => console.log("Navigate to payment methods")}
+                />
+
+                <MenuItem
+                    icon="location-outline"
+                    title={t("account.menu.shippingAddresses")}
+                    subtitle={t("account.subtitles.addAddress")}
+                    rightText={addresses?.length?.toString()}
+                    onPress={() =>
+                        console.log("Navigate to shipping addresses")
+                    }
+                />
+            </View>
+
+            {/* Preferences Menu */}
+            <View style={styles.menuContainer}>
+                <MenuItem
+                    icon="book-outline"
+                    title="Reading Preferences"
+                    subtitle={t("account.subtitles.readingPreferences")}
+                    onPress={() => console.log("Navigate to preferences")}
+                />
+
+                <MenuItem
+                    icon="notifications-outline"
+                    title={t("account.menu.notifications")}
+                    subtitle={t("account.subtitles.orderUpdates")}
+                    onPress={() => console.log("Navigate to notifications")}
+                />
+            </View>
+
+            {/* Language */}
+            <View style={styles.menuContainer}>
+                <Text
+                    style={[
+                        styles.menuSection,
+                        { color: theme.colors.textSecondary },
+                    ]}
+                >
+                    {t("account.menu.language")}
+                </Text>
+                <LanguageSwitch onPress={() => {}} />
+            </View>
+
+            {/* Support Menu */}
+            <View style={styles.menuContainer}>
+                <Text
+                    style={[
+                        styles.menuSection,
+                        { color: theme.colors.textSecondary },
+                    ]}
+                >
+                    {t("account.sections.support")}
+                </Text>
+
+                <MenuItem
+                    icon="help-circle-outline"
+                    title={t("account.menu.help")}
+                    subtitle={t("account.subtitles.helpSupport")}
+                    onPress={() => console.log("Navigate to help")}
+                />
+
+                <MenuItem
+                    icon="star-outline"
+                    title="Rate the App"
+                    subtitle={t("account.subtitles.rateApp")}
+                    onPress={() => console.log("Open app store")}
+                />
+            </View>
+
+            {/* Legal Menu */}
+            <View style={styles.menuContainer}>
+                <Text
+                    style={[
+                        styles.menuSection,
+                        { color: theme.colors.textSecondary },
+                    ]}
+                >
+                    {t("account.sections.legal")}
+                </Text>
+
+                <MenuItem
+                    icon="document-text-outline"
+                    title={t("account.menu.terms")}
+                    onPress={() => console.log("Navigate to terms")}
+                />
+
+                <MenuItem
+                    icon="shield-checkmark-outline"
+                    title={t("account.menu.privacy")}
+                    onPress={() => console.log("Navigate to privacy")}
+                />
+            </View>
+
+            {/* Sign Out */}
+            <View style={styles.menuContainer}>
+                <MenuItem
+                    icon="log-out-outline"
+                    title={t("account.menu.signOut")}
+                    onPress={handleLogout}
+                    iconColor={theme.colors.error}
+                    rightIcon="log-out-outline"
+                />
+            </View>
+
+            {/* Version */}
+            <View style={styles.versionContainer}>
+                <Text
+                    style={[
+                        styles.versionText,
+                        { color: theme.colors.textLight },
+                    ]}
+                >
+                    {t("account.menu.version")} 1.0.0
+                </Text>
+            </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingBottom: 60,
+        marginTop: 30,
     },
     signInContainer: {
-        flex: 1,
         justifyContent: "center",
         alignItems: "center",
         paddingHorizontal: 32,
+        paddingVertical: 32,
     },
     signInIcon: {
-        marginBottom: 20,
+        marginBottom: 24,
     },
     signInTitle: {
         fontSize: 24,
-        fontWeight: "700",
-        marginBottom: 8,
+        fontWeight: "600",
         textAlign: "center",
+        marginBottom: 8,
     },
     signInText: {
         fontSize: 16,
@@ -465,12 +523,13 @@ const styles = StyleSheet.create({
         marginBottom: 32,
     },
     signInButtons: {
+        gap: 16,
         width: "100%",
-        gap: 12,
     },
     signInButton: {
         paddingVertical: 16,
-        borderRadius: 8,
+        paddingHorizontal: 32,
+        borderRadius: 12,
         alignItems: "center",
     },
     signInButtonText: {
@@ -479,80 +538,32 @@ const styles = StyleSheet.create({
     },
     registerButton: {
         paddingVertical: 16,
-        borderRadius: 8,
-        borderWidth: 1,
+        paddingHorizontal: 32,
+        borderRadius: 12,
+        borderWidth: 2,
         alignItems: "center",
     },
     registerButtonText: {
         fontSize: 16,
         fontWeight: "600",
     },
-    guestMenu: {
-        padding: 16,
-    },
-    profileSection: {
-        padding: 20,
-        marginBottom: 8,
-    },
-    profileInfo: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 16,
-    },
-    avatar: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        alignItems: "center",
-        justifyContent: "center",
-        marginRight: 16,
-    },
-    avatarText: {
-        fontSize: 24,
-        fontWeight: "700",
-    },
-    userInfo: {
-        flex: 1,
-    },
-    userName: {
-        fontSize: 20,
-        fontWeight: "700",
-        marginBottom: 4,
-    },
-    userEmail: {
-        fontSize: 16,
-    },
-    editProfileButton: {
-        paddingVertical: 12,
-        paddingHorizontal: 24,
-        borderRadius: 8,
-        borderWidth: 1,
-        alignSelf: "flex-start",
-    },
-    editProfileText: {
-        fontSize: 14,
-        fontWeight: "600",
-    },
     menuContainer: {
-        marginBottom: 8,
+        marginBottom: 24,
+        paddingHorizontal: 20,
     },
     menuSection: {
         fontSize: 14,
         fontWeight: "600",
-        marginBottom: 8,
-        marginTop: 16,
-        marginHorizontal: 16,
         textTransform: "uppercase",
+        marginBottom: 16,
         letterSpacing: 0.5,
     },
     menuItem: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
-        padding: 16,
-        marginHorizontal: 16,
-        marginBottom: 1,
-        borderRadius: 8,
+        paddingVertical: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: "rgba(0, 0, 0, 0.05)",
     },
     menuItemLeft: {
         flexDirection: "row",
@@ -560,33 +571,66 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     menuItemIcon: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        alignItems: "center",
+        justifyContent: "center",
         marginRight: 16,
     },
-    menuItemText: {
+    menuItemContent: {
         flex: 1,
     },
     menuItemTitle: {
         fontSize: 16,
-        fontWeight: "500",
         marginBottom: 2,
     },
     menuItemSubtitle: {
         fontSize: 14,
-        lineHeight: 18,
     },
     menuItemRight: {
         flexDirection: "row",
         alignItems: "center",
+        gap: 8,
     },
     menuItemRightText: {
         fontSize: 14,
-        marginRight: 8,
+    },
+    profileHeader: {
+        padding: 20,
+        marginBottom: 8,
+    },
+    profileInfo: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    profileAvatar: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: 16,
+    },
+    profileAvatarText: {
+        fontSize: 24,
+        fontWeight: "bold",
+    },
+    profileDetails: {
+        flex: 1,
+    },
+    profileName: {
+        fontSize: 20,
+        fontWeight: "bold",
+    },
+    profileEmail: {
+        fontSize: 16,
     },
     versionContainer: {
         alignItems: "center",
-        paddingVertical: 20,
+        paddingVertical: 32,
     },
     versionText: {
-        fontSize: 14,
+        fontSize: 12,
     },
 });

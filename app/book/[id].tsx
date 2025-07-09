@@ -1,8 +1,17 @@
-import { useBook } from "@/hooks/useApi";
+import {
+    useAddToCart,
+    useAddToFavorites,
+    useBook,
+    useCart,
+    useFavorites,
+    useRemoveFromCart,
+    useRemoveFromFavorites,
+    useUpdateCartItem,
+} from "@/hooks/useApi";
 import { theme } from "@/lib/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Dimensions,
     Image,
@@ -17,6 +26,7 @@ import {
 import { ApiErrorBoundary } from "../../components/ApiErrorBoundary";
 import { useI18n } from "../../contexts/I18nContext";
 import { useAppTheme } from "../../contexts/ThemeContext";
+import { useUser } from "../../contexts/UserContext";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -24,12 +34,32 @@ export default function BookDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const theme = useAppTheme();
     const { t } = useI18n();
-    const [isFavorite, setIsFavorite] = useState(false);
+    const { user, isAuthenticated } = useUser();
     const [quantity, setQuantity] = useState(0);
-    const [isInCart, setIsInCart] = useState(false);
 
-    // Get book from API
+    // API hooks
     const { data: book, isLoading, error } = useBook(id);
+    const { data: cart } = useCart();
+    const { data: favorites } = useFavorites(user?.id || "");
+    const addToCartMutation = useAddToCart();
+    const updateCartItemMutation = useUpdateCartItem();
+    const removeFromCartMutation = useRemoveFromCart();
+    const addToFavoritesMutation = useAddToFavorites();
+    const removeFromFavoritesMutation = useRemoveFromFavorites();
+
+    // Derived state
+    const cartItem = cart?.items?.find((item) => item.book.id === id);
+    const isInCart = !!cartItem;
+    const isFavorite = favorites?.some((fav) => fav.book.id === id) || false;
+
+    // Update local quantity when cart changes
+    useEffect(() => {
+        if (cartItem) {
+            setQuantity(cartItem.quantity);
+        } else {
+            setQuantity(0);
+        }
+    }, [cartItem]);
 
     // Early return for loading state
     if (isLoading) {
@@ -149,30 +179,113 @@ export default function BookDetailScreen() {
     };
 
     const handleFavoriteToggle = () => {
-        setIsFavorite(!isFavorite);
+        console.log("[BookDetail] Favorite button clicked");
+        console.log("[BookDetail] User authenticated:", isAuthenticated);
+        console.log("[BookDetail] User ID:", user?.id);
+        console.log("[BookDetail] Book ID:", id);
+        console.log("[BookDetail] Currently favorite:", isFavorite);
+
+        if (isAuthenticated && user?.id) {
+            if (isFavorite) {
+                console.log("[BookDetail] Removing from favorites...");
+                removeFromFavoritesMutation.mutate(
+                    {
+                        userId: user.id,
+                        bookId: id,
+                    },
+                    {
+                        onError: (error: any) => {
+                            if (error?.status === 401) {
+                                console.log(
+                                    "[BookDetail] Favorites feature temporarily unavailable due to server authentication issue"
+                                );
+                                // For now just log - you could add a toast notification here
+                            }
+                        },
+                    }
+                );
+            } else {
+                console.log("[BookDetail] Adding to favorites...");
+                addToFavoritesMutation.mutate(
+                    { userId: user.id, bookId: id },
+                    {
+                        onError: (error: any) => {
+                            if (error?.status === 401) {
+                                console.log(
+                                    "[BookDetail] Favorites feature temporarily unavailable due to server authentication issue"
+                                );
+                                // For now just log - you could add a toast notification here
+                            }
+                        },
+                    }
+                );
+            }
+        } else {
+            console.log(
+                "[BookDetail] User not authenticated, redirecting to login"
+            );
+            router.push("/auth/login");
+        }
     };
 
     const handleAddToCart = () => {
-        if (!isInCart) {
-            // First time adding to cart
-            setQuantity(1);
-            setIsInCart(true);
-            console.log(`Added 1 copy of "${book.title}" to cart`);
+        console.log("[BookDetail] Add to cart button clicked");
+        console.log("[BookDetail] User authenticated:", isAuthenticated);
+        console.log("[BookDetail] Book ID:", id);
+        console.log("[BookDetail] Currently in cart:", isInCart);
+        console.log("[BookDetail] Book stock:", book?.stockQuantity);
+
+        if (isAuthenticated) {
+            if (!isInCart) {
+                console.log("[BookDetail] Adding to cart with quantity 1...");
+                // First time adding to cart
+                addToCartMutation.mutate({ bookId: id, quantity: 1 });
+            } else {
+                console.log(
+                    "[BookDetail] Item already in cart, not adding again"
+                );
+            }
+        } else {
+            console.log(
+                "[BookDetail] User not authenticated, redirecting to login"
+            );
+            router.push("/auth/login");
         }
     };
 
     const handleQuantityChange = (change: number) => {
-        const newQuantity = quantity + change;
-        if (newQuantity >= 0 && newQuantity <= book.stockQuantity) {
-            setQuantity(newQuantity);
-            if (newQuantity === 0) {
-                setIsInCart(false);
-                console.log(`Removed "${book.title}" from cart`);
-            } else {
+        console.log(
+            "[BookDetail] Quantity change button clicked, change:",
+            change
+        );
+        console.log("[BookDetail] Current quantity:", quantity);
+        console.log("[BookDetail] Cart item:", cartItem);
+
+        if (isAuthenticated && cartItem) {
+            const newQuantity = quantity + change;
+            console.log("[BookDetail] New quantity would be:", newQuantity);
+
+            if (newQuantity >= 1 && newQuantity <= book.stockQuantity) {
+                console.log("[BookDetail] Updating cart item quantity...");
+                // Update existing cart item quantity
+                updateCartItemMutation.mutate({
+                    cartItemId: cartItem.id,
+                    data: { quantity: newQuantity },
+                });
+            } else if (newQuantity === 0) {
                 console.log(
-                    `Updated "${book.title}" quantity to ${newQuantity}`
+                    "[BookDetail] Removing item from cart (quantity = 0)..."
                 );
+                // Remove item from cart when quantity becomes 0
+                removeFromCartMutation.mutate(cartItem.id);
+            } else {
+                console.log("[BookDetail] Invalid quantity, not updating");
             }
+        } else {
+            console.log(
+                "[BookDetail] User not authenticated or no cart item, redirecting to login"
+            );
+            router.push("/auth/login");
         }
     };
 

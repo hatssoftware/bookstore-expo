@@ -167,6 +167,55 @@
       "outOfStock": "Out of Stock"
     }
   },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to your account",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Enter your email",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "signInButton": "Sign In",
+      "createAccountLink": "Don't have an account? Sign up",
+      "forgotPasswordLink": "Forgot your password?",
+      "signingIn": "Signing in..."
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join our bookstore community",
+      "nameLabel": "Full Name",
+      "namePlaceholder": "Enter your full name",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Enter your email",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Create a password",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "genderLabel": "Gender (Optional)",
+      "genderPlaceholder": "Select gender",
+      "ageLabel": "Age (Optional)",
+      "agePlaceholder": "Enter your age",
+      "agreeToTerms": "I agree to the Terms of Service and Privacy Policy",
+      "createAccountButton": "Create Account",
+      "signInLink": "Already have an account? Sign in",
+      "creatingAccount": "Creating account..."
+    },
+    "errors": {
+      "invalidEmail": "Please enter a valid email address",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "nameRequired": "Name is required",
+      "termsRequired": "You must agree to the terms",
+      "invalidCredentials": "Invalid email or password",
+      "emailAlreadyExists": "Email already exists",
+      "networkError": "Network error. Please try again.",
+      "unknownError": "An error occurred. Please try again."
+    },
+    "success": {
+      "accountCreated": "Account created successfully!",
+      "loginSuccessful": "Login successful!"
+    }
+  },
   "common": {
     "loading": "Loading...",
     "error": "Error",

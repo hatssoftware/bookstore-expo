@@ -70,6 +70,7 @@
     }
   },
   "cart": {
+    "items": "položky",
     "title": "Košík",
     "empty": {
       "title": "Váš košík je prázdný",
@@ -165,6 +166,55 @@
       "inStock": "Skladem",
       "limited": "Zbývá",
       "outOfStock": "Není skladem"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Vítejte zpět",
+      "subtitle": "Přihlaste se ke svému účtu",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "Zadejte svůj e-mail",
+      "passwordLabel": "Heslo",
+      "passwordPlaceholder": "Zadejte své heslo",
+      "signInButton": "Přihlásit se",
+      "createAccountLink": "Nemáte účet? Zaregistrujte se",
+      "forgotPasswordLink": "Zapomněli jste heslo?",
+      "signingIn": "Přihlašování..."
+    },
+    "register": {
+      "title": "Vytvořit účet",
+      "subtitle": "Připojte se k naší komunitě knihkupectví",
+      "nameLabel": "Celé jméno",
+      "namePlaceholder": "Zadejte své celé jméno",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "Zadejte svůj e-mail",
+      "passwordLabel": "Heslo",
+      "passwordPlaceholder": "Vytvořte heslo",
+      "confirmPasswordLabel": "Potvrdit heslo",
+      "confirmPasswordPlaceholder": "Potvrďte své heslo",
+      "genderLabel": "Pohlaví (volitelné)",
+      "genderPlaceholder": "Vyberte pohlaví",
+      "ageLabel": "Věk (volitelný)",
+      "agePlaceholder": "Zadejte svůj věk",
+      "agreeToTerms": "Souhlasím s podmínkami služby a zásadami ochrany osobních údajů",
+      "createAccountButton": "Vytvořit účet",
+      "signInLink": "Už máte účet? Přihlaste se",
+      "creatingAccount": "Vytváření účtu..."
+    },
+    "errors": {
+      "invalidEmail": "Zadejte platnou e-mailovou adresu",
+      "passwordTooShort": "Heslo musí mít alespoň 6 znaků",
+      "passwordsDoNotMatch": "Hesla se neshodují",
+      "nameRequired": "Jméno je povinné",
+      "termsRequired": "Musíte souhlasit s podmínkami",
+      "invalidCredentials": "Neplatný e-mail nebo heslo",
+      "emailAlreadyExists": "E-mail již existuje",
+      "networkError": "Chyba sítě. Zkuste to znovu.",
+      "unknownError": "Došlo k chybě. Zkuste to znovu."
+    },
+    "success": {
+      "accountCreated": "Účet úspěšně vytvořen!",
+      "loginSuccessful": "Přihlášení bylo úspěšné!"
     }
   },
   "common": {

@@ -167,6 +167,55 @@
       "outOfStock": "Agotado"
     }
   },
+  "auth": {
+    "login": {
+      "title": "Bienvenido de Vuelta",
+      "subtitle": "Inicia sesión en tu cuenta",
+      "emailLabel": "Correo Electrónico",
+      "emailPlaceholder": "Ingresa tu correo electrónico",
+      "passwordLabel": "Contraseña",
+      "passwordPlaceholder": "Ingresa tu contraseña",
+      "signInButton": "Iniciar Sesión",
+      "createAccountLink": "¿No tienes cuenta? Regístrate",
+      "forgotPasswordLink": "¿Olvidaste tu contraseña?",
+      "signingIn": "Iniciando sesión..."
+    },
+    "register": {
+      "title": "Crear Cuenta",
+      "subtitle": "Únete a nuestra comunidad de librería",
+      "nameLabel": "Nombre Completo",
+      "namePlaceholder": "Ingresa tu nombre completo",
+      "emailLabel": "Correo Electrónico",
+      "emailPlaceholder": "Ingresa tu correo electrónico",
+      "passwordLabel": "Contraseña",
+      "passwordPlaceholder": "Crea una contraseña",
+      "confirmPasswordLabel": "Confirmar Contraseña",
+      "confirmPasswordPlaceholder": "Confirma tu contraseña",
+      "genderLabel": "Género (Opcional)",
+      "genderPlaceholder": "Selecciona género",
+      "ageLabel": "Edad (Opcional)",
+      "agePlaceholder": "Ingresa tu edad",
+      "agreeToTerms": "Acepto los Términos de Servicio y Política de Privacidad",
+      "createAccountButton": "Crear Cuenta",
+      "signInLink": "¿Ya tienes cuenta? Inicia sesión",
+      "creatingAccount": "Creando cuenta..."
+    },
+    "errors": {
+      "invalidEmail": "Por favor ingresa un correo electrónico válido",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden",
+      "nameRequired": "El nombre es obligatorio",
+      "termsRequired": "Debes aceptar los términos",
+      "invalidCredentials": "Correo electrónico o contraseña inválidos",
+      "emailAlreadyExists": "El correo electrónico ya existe",
+      "networkError": "Error de red. Por favor intenta de nuevo.",
+      "unknownError": "Ocurrió un error. Por favor intenta de nuevo."
+    },
+    "success": {
+      "accountCreated": "¡Cuenta creada exitosamente!",
+      "loginSuccessful": "¡Inicio de sesión exitoso!"
+    }
+  },
   "common": {
     "loading": "Cargando...",
     "error": "Error",

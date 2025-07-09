@@ -2,6 +2,7 @@ import { ApiStatusProvider } from "@/contexts/ApiStatusContext";
 import { I18nProvider } from "@/contexts/I18nContext";
 import { QueryProvider } from "@/contexts/QueryProvider";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { UserProvider } from "@/contexts/UserContext";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -38,19 +39,35 @@ export default function RootLayout() {
             <ThemeProvider>
                 <ApiStatusProvider>
                     <QueryProvider>
-                        <Stack screenOptions={{ headerShown: false }}>
-                            <Stack.Screen
-                                name="(tabs)"
-                                options={{ headerShown: false }}
-                            />
-                            <Stack.Screen
-                                name="book/[id]"
-                                options={{
-                                    headerShown: false,
-                                    presentation: "modal",
-                                }}
-                            />
-                        </Stack>
+                        <UserProvider>
+                            <Stack screenOptions={{ headerShown: false }}>
+                                <Stack.Screen
+                                    name="(tabs)"
+                                    options={{ headerShown: false }}
+                                />
+                                <Stack.Screen
+                                    name="book/[id]"
+                                    options={{
+                                        headerShown: false,
+                                        presentation: "modal",
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name="auth/login"
+                                    options={{
+                                        headerShown: false,
+                                        presentation: "modal",
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name="auth/register"
+                                    options={{
+                                        headerShown: false,
+                                        presentation: "modal",
+                                    }}
+                                />
+                            </Stack>
+                        </UserProvider>
                     </QueryProvider>
                 </ApiStatusProvider>
             </ThemeProvider>
