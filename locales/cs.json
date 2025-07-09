@@ -191,6 +191,15 @@
     "yes": "Ano",
     "no": "Ne"
   },
+  "api": {
+    "error": {
+      "title": "Problém s Připojením",
+      "defaultMessage": "Zdá se, že server nyní nelze kontaktovat. Zkuste to prosím znovu později.",
+      "explanation": "Naše servery mohou být dočasně nedostupné kvůli údržbě nebo vysoké návštěvnosti. Děkujeme za vaši trpělivost.",
+      "offline": "Offline",
+      "retryButton": "Zkusit Znovu"
+    }
+  },
   "languages": {
     "en": "English",
     "es": "Español",

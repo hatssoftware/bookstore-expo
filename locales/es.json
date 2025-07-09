@@ -191,6 +191,15 @@
     "yes": "Sí",
     "no": "No"
   },
+  "api": {
+    "error": {
+      "title": "Problema de Conexión",
+      "defaultMessage": "Parece que el servidor no puede ser contactado en este momento. Por favor, inténtalo de nuevo más tarde.",
+      "explanation": "Nuestros servidores podrían estar temporalmente no disponibles debido a mantenimiento o alto tráfico. Apreciamos tu paciencia.",
+      "offline": "Sin conexión",
+      "retryButton": "Intentar de Nuevo"
+    }
+  },
   "languages": {
     "en": "English",
     "es": "Español",

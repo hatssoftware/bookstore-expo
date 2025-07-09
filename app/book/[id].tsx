@@ -14,6 +14,7 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import { ApiErrorBoundary } from "../../components/ApiErrorBoundary";
 import { useI18n } from "../../contexts/I18nContext";
 import { useAppTheme } from "../../contexts/ThemeContext";
 
@@ -80,6 +81,15 @@ export default function BookDetailScreen() {
 
     // Early return for error state
     if (error || !book) {
+        // Check if this is an API unavailability error
+        if ((error as any)?.isApiUnavailable) {
+            return (
+                <ApiErrorBoundary>
+                    <></>
+                </ApiErrorBoundary>
+            );
+        }
+
         return (
             <View
                 style={[

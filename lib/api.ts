@@ -113,6 +113,7 @@ class ApiClient {
                 ...options.headers,
             },
             credentials: "include", // Important for session cookies
+            signal: AbortSignal.timeout(10000), // 10 second timeout
             ...options,
         };
 
@@ -130,7 +131,12 @@ class ApiClient {
                     errorMessage = errorData || `HTTP ${response.status}`;
                 }
 
-                throw new Error(errorMessage);
+                // Create enhanced error with status code information
+                const error = new Error(errorMessage);
+                (error as any).status = response.status;
+                (error as any).statusText = response.statusText;
+                (error as any).isApiUnavailable = response.status >= 500;
+                throw error;
             }
 
             const contentType = response.headers.get("content-type");
@@ -141,9 +147,25 @@ class ApiClient {
             return response.text() as T;
         } catch (error) {
             if (error instanceof Error) {
+                // Enhanced error information for better error handling
+                if (error.name === "AbortError" || error.message.includes("timeout")) {
+                    (error as any).isApiUnavailable = true;
+                    error.message = "Request timed out - API may be unavailable";
+                } else if (error.name === "TypeError" && error.message.includes("fetch")) {
+                    (error as any).isApiUnavailable = true;
+                    error.message = "Network error - unable to connect to API";
+                } else if (!error.hasOwnProperty('status')) {
+                    // This is likely a network error
+                    (error as any).isApiUnavailable = true;
+                    if (!error.message.includes("API")) {
+                        error.message = `Network error - ${error.message}`;
+                    }
+                }
                 throw error;
             }
-            throw new Error("Network error occurred");
+            const networkError = new Error("Unknown network error occurred");
+            (networkError as any).isApiUnavailable = true;
+            throw networkError;
         }
     }
 

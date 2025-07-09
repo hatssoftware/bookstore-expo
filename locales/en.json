@@ -191,6 +191,15 @@
     "yes": "Yes",
     "no": "No"
   },
+  "api": {
+    "error": {
+      "title": "Connection Issue",
+      "defaultMessage": "It seems the API cannot be contacted right now. Please try again later.",
+      "explanation": "Our servers might be temporarily unavailable due to maintenance or high traffic. We appreciate your patience.",
+      "offline": "Offline",
+      "retryButton": "Try Again"
+    }
+  },
   "languages": {
     "en": "English",
     "es": "Español",

@@ -1,3 +1,4 @@
+import { ApiErrorBoundary } from "@/components/ApiErrorBoundary";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
@@ -152,6 +153,11 @@ export default function FavoritesScreen() {
 
     // Show error state
     if (error) {
+        // Check if this is an API unavailability error
+        if ((error as any)?.isApiUnavailable) {
+            return <ApiErrorBoundary><></></ApiErrorBoundary>;
+        }
+        
         return (
             <View
                 style={[

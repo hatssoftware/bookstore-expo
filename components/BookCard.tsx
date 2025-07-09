@@ -50,11 +50,10 @@ export function BookCard({
 
     const renderCompactCard = () => (
         <Pressable
-            style={({ pressed }) => [
+            style={() => [
                 styles.compactContainer,
                 {
                     backgroundColor: theme.colors.card,
-                    transform: [{ scale: pressed ? 0.98 : 1 }],
                 },
                 theme.shadows.sm,
             ]}
@@ -143,11 +142,10 @@ export function BookCard({
 
     const renderFeaturedCard = () => (
         <Pressable
-            style={({ pressed }) => [
+            style={() => [
                 styles.featuredContainer,
                 {
                     backgroundColor: theme.colors.card,
-                    transform: [{ scale: pressed ? 0.98 : 1 }],
                 },
                 theme.shadows.md,
             ]}
@@ -320,11 +318,10 @@ export function BookCard({
     // Default card
     return (
         <Pressable
-            style={({ pressed }) => [
+            style={() => [
                 styles.container,
                 {
-                    backgroundColor: theme.colors.card,
-                    transform: [{ scale: pressed ? 0.98 : 1 }],
+                    backgroundColor: theme.colors.card, 
                 },
                 theme.shadows.sm,
             ]}

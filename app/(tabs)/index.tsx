@@ -1,5 +1,7 @@
+import { ApiErrorBoundary } from "@/components/ApiErrorBoundary";
 import { BookCard } from "@/components/BookCard";
 import { SearchBar } from "@/components/SearchBar";
+import { useApiStatus } from "@/contexts/ApiStatusContext";
 import { useI18n } from "@/contexts/I18nContext";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import {
@@ -29,12 +31,17 @@ import {
 export default function HomeScreen() {
     const theme = useAppTheme();
     const { t } = useI18n();
+    const { isApiAvailable } = useApiStatus();
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState<any[]>([]);
 
     // API hooks
     const { data: session } = useSession();
-    const { data: topBooks } = useTopBooks();
+    const {
+        data: topBooks,
+        isLoading: topBooksLoading,
+        error: topBooksError,
+    } = useTopBooks();
     const { data: searchData } = useSearchBooks(searchQuery);
     const { data: recommendations } = useRecommendations();
     const { data: favorites } = useFavorites(session?.user?.id || "");
@@ -84,7 +91,159 @@ export default function HomeScreen() {
     };
 
     const renderFeaturedSection = () => {
-        if (!topBooks || topBooks.length === 0) return null;
+        // Debug logging
+        console.log("renderFeaturedSection:", {
+            topBooksLoading,
+            topBooksError: topBooksError?.message,
+            isApiUnavailable: (topBooksError as any)?.isApiUnavailable,
+            isApiAvailable,
+            hasTopBooks: !!topBooks,
+        });
+
+        // Show loading state
+        if (topBooksLoading) {
+            return (
+                <View style={styles.section}>
+                    <View style={styles.sectionHeader}>
+                        <Text
+                            style={[
+                                styles.sectionTitle,
+                                {
+                                    color: theme.colors.text,
+                                    fontFamily:
+                                        theme.typography.fontFamily.bold,
+                                },
+                            ]}
+                        >
+                            {t("home.sections.featured")}
+                        </Text>
+                    </View>
+                    <View style={styles.loadingCard}>
+                        <Text
+                            style={[
+                                styles.loadingText,
+                                { color: theme.colors.textSecondary },
+                            ]}
+                        >
+                            {t("common.loading")}
+                        </Text>
+                    </View>
+                </View>
+            );
+        }
+
+        // Show offline content when API is unavailable
+        if (
+            !isApiAvailable ||
+            (topBooksError && (topBooksError as any)?.isApiUnavailable) ||
+            (topBooksError && !topBooks)
+        ) {
+            return (
+                <View style={styles.section}>
+                    <View style={styles.sectionHeader}>
+                        <Text
+                            style={[
+                                styles.sectionTitle,
+                                {
+                                    color: theme.colors.text,
+                                    fontFamily:
+                                        theme.typography.fontFamily.bold,
+                                },
+                            ]}
+                        >
+                            {t("home.sections.featured")}
+                        </Text>
+                    </View>
+                    <View
+                        style={[
+                            styles.offlineCard,
+                            { backgroundColor: theme.colors.surface },
+                        ]}
+                    >
+                        <Ionicons
+                            name="cloud-offline-outline"
+                            size={48}
+                            color={theme.colors.textLight}
+                            style={styles.offlineIcon}
+                        />
+                        <Text
+                            style={[
+                                styles.offlineTitle,
+                                { color: theme.colors.text },
+                            ]}
+                        >
+                            Content Unavailable
+                        </Text>
+                        <Text
+                            style={[
+                                styles.offlineMessage,
+                                { color: theme.colors.textSecondary },
+                            ]}
+                        >
+                            Featured books will appear here when connection is
+                            restored.
+                        </Text>
+                    </View>
+                </View>
+            );
+        }
+
+        // Regular content - if no data and no error, return null
+        if (!topBooks || topBooks.length === 0) {
+            // If there's no data and no error, don't show anything (normal empty state)
+            if (!topBooksError) {
+                return null;
+            }
+            // If there's an error but we didn't catch it above, show offline content as fallback
+            return (
+                <View style={styles.section}>
+                    <View style={styles.sectionHeader}>
+                        <Text
+                            style={[
+                                styles.sectionTitle,
+                                {
+                                    color: theme.colors.text,
+                                    fontFamily:
+                                        theme.typography.fontFamily.bold,
+                                },
+                            ]}
+                        >
+                            {t("home.sections.featured")}
+                        </Text>
+                    </View>
+                    <View
+                        style={[
+                            styles.offlineCard,
+                            { backgroundColor: theme.colors.surface },
+                        ]}
+                    >
+                        <Ionicons
+                            name="cloud-offline-outline"
+                            size={48}
+                            color={theme.colors.textLight}
+                            style={styles.offlineIcon}
+                        />
+                        <Text
+                            style={[
+                                styles.offlineTitle,
+                                { color: theme.colors.text },
+                            ]}
+                        >
+                            Content Unavailable
+                        </Text>
+                        <Text
+                            style={[
+                                styles.offlineMessage,
+                                { color: theme.colors.textSecondary },
+                            ]}
+                        >
+                            Featured books will appear here when connection is
+                            restored.
+                        </Text>
+                    </View>
+                </View>
+            );
+        }
 
         const featuredBook = topBooks[0];
 
@@ -116,7 +275,150 @@ export default function HomeScreen() {
     };
 
     const renderBestsellersSection = () => {
-        if (!topBooks || topBooks.length === 0) return null;
+        // Show loading state
+        if (topBooksLoading) {
+            return (
+                <View style={styles.section}>
+                    <View style={styles.sectionHeader}>
+                        <Text
+                            style={[
+                                styles.sectionTitle,
+                                {
+                                    color: theme.colors.text,
+                                    fontFamily:
+                                        theme.typography.fontFamily.bold,
+                                },
+                            ]}
+                        >
+                            {t("home.sections.bestsellers")}
+                        </Text>
+                    </View>
+                    <View style={styles.loadingCard}>
+                        <Text
+                            style={[
+                                styles.loadingText,
+                                { color: theme.colors.textSecondary },
+                            ]}
+                        >
+                            {t("common.loading")}
+                        </Text>
+                    </View>
+                </View>
+            );
+        }
+
+        // Show offline content when API is unavailable
+        if (
+            !isApiAvailable ||
+            (topBooksError && (topBooksError as any)?.isApiUnavailable) ||
+            (topBooksError && !topBooks)
+        ) {
+            return (
+                <View style={styles.section}>
+                    <View style={styles.sectionHeader}>
+                        <Text
+                            style={[
+                                styles.sectionTitle,
+                                {
+                                    color: theme.colors.text,
+                                    fontFamily:
+                                        theme.typography.fontFamily.bold,
+                                },
+                            ]}
+                        >
+                            {t("home.sections.bestsellers")}
+                        </Text>
+                    </View>
+                    <View
+                        style={[
+                            styles.offlineCard,
+                            { backgroundColor: theme.colors.surface },
+                        ]}
+                    >
+                        <Ionicons
+                            name="library-outline"
+                            size={48}
+                            color={theme.colors.textLight}
+                            style={styles.offlineIcon}
+                        />
+                        <Text
+                            style={[
+                                styles.offlineTitle,
+                                { color: theme.colors.text },
+                            ]}
+                        >
+                            Bestsellers Unavailable
+                        </Text>
+                        <Text
+                            style={[
+                                styles.offlineMessage,
+                                { color: theme.colors.textSecondary },
+                            ]}
+                        >
+                            Our bestselling books will be shown here when
+                            connection is restored.
+                        </Text>
+                    </View>
+                </View>
+            );
+        }
+
+        // Regular content - if no data and no error, return null
+        if (!topBooks || topBooks.length === 0) {
+            // If there's no data and no error, don't show anything (normal empty state)
+            if (!topBooksError) {
+                return null;
+            }
+            // If there's an error but we didn't catch it above, show offline content as fallback
+            return (
+                <View style={styles.section}>
+                    <View style={styles.sectionHeader}>
+                        <Text
+                            style={[
+                                styles.sectionTitle,
+                                {
+                                    color: theme.colors.text,
+                                    fontFamily:
+                                        theme.typography.fontFamily.bold,
+                                },
+                            ]}
+                        >
+                            {t("home.sections.bestsellers")}
+                        </Text>
+                    </View>
+                    <View
+                        style={[
+                            styles.offlineCard,
+                            { backgroundColor: theme.colors.surface },
+                        ]}
+                    >
+                        <Ionicons
+                            name="library-outline"
+                            size={48}
+                            color={theme.colors.textLight}
+                            style={styles.offlineIcon}
+                        />
+                        <Text
+                            style={[
+                                styles.offlineTitle,
+                                { color: theme.colors.text },
+                            ]}
+                        >
+                            Bestsellers Unavailable
+                        </Text>
+                        <Text
+                            style={[
+                                styles.offlineMessage,
+                                { color: theme.colors.textSecondary },
+                            ]}
+                        >
+                            Our bestselling books will be shown here when
+                            connection is restored.
+                        </Text>
+                    </View>
+                </View>
+            );
+        }
 
         return (
             <View style={styles.section}>
@@ -358,6 +660,13 @@ export default function HomeScreen() {
                     </View>
                 </View>
 
+                {/* API Status Banner */}
+                {!isApiAvailable && (
+                    <ApiErrorBoundary minimalUI showRetry>
+                        <></>
+                    </ApiErrorBoundary>
+                )}
+
                 {/* Search */}
                 <View style={[styles.searchSection]}>
                     <SearchBar
@@ -506,5 +815,40 @@ const styles = StyleSheet.create({
     },
     searchResultSubtitle: {
         fontSize: 14,
+    },
+
+    // Loading and offline states
+    loadingCard: {
+        height: 200,
+        backgroundColor: "transparent",
+        borderRadius: 16,
+        marginHorizontal: 20,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    loadingText: {
+        fontSize: 16,
+    },
+    offlineCard: {
+        height: 200,
+        borderRadius: 16,
+        marginHorizontal: 20,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 24,
+    },
+    offlineIcon: {
+        marginBottom: 16,
+    },
+    offlineTitle: {
+        fontSize: 18,
+        fontWeight: "600",
+        textAlign: "center",
+        marginBottom: 8,
+    },
+    offlineMessage: {
+        fontSize: 14,
+        textAlign: "center",
+        lineHeight: 20,
     },
 });

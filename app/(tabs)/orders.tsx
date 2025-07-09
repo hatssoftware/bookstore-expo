@@ -1,3 +1,4 @@
+import { ApiErrorBoundary } from "@/components/ApiErrorBoundary";
 import { useI18n } from "@/contexts/I18nContext";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
@@ -212,6 +213,11 @@ export default function OrdersScreen() {
 
     // Show error state
     if (error) {
+        // Check if this is an API unavailability error
+        if ((error as any)?.isApiUnavailable) {
+            return <ApiErrorBoundary><></></ApiErrorBoundary>;
+        }
+        
         return (
             <View
                 style={[
