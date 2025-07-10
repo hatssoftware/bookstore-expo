@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:3000/api";
+const BASE_URL = "http://bookstore.westeurope.azurecontainer.io/api";
 const TOKEN_KEY = "bookstore_auth_token";
 
 // API Response types

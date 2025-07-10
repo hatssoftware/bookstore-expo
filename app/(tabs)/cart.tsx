@@ -529,6 +529,7 @@ const styles = StyleSheet.create({
     },
     cartSummary: {
         padding: 16,
+        paddingBottom: 80,
         borderTopWidth: 1,
         borderTopColor: "#e5e7eb",
     },
