@@ -363,20 +363,13 @@ export default function AccountScreen() {
                 <MenuItem
                     icon="receipt-outline"
                     title={t("account.menu.orders")}
-                    onPress={() => console.log("Navigate to orders")}
+                    onPress={() => router.push("/orders")}
                 />
 
                 <MenuItem
                     icon="heart-outline"
                     title={t("account.menu.favorites")}
-                    onPress={() => console.log("Navigate to favorites")}
-                />
-
-                <MenuItem
-                    icon="card-outline"
-                    title={t("account.menu.paymentMethods")}
-                    subtitle={t("account.subtitles.paymentOptions")}
-                    onPress={() => console.log("Navigate to payment methods")}
+                    onPress={() => router.push("/favorites")}
                 />
 
                 <MenuItem
@@ -384,26 +377,7 @@ export default function AccountScreen() {
                     title={t("account.menu.shippingAddresses")}
                     subtitle={t("account.subtitles.addAddress")}
                     rightText={addresses?.length?.toString()}
-                    onPress={() =>
-                        console.log("Navigate to shipping addresses")
-                    }
-                />
-            </View>
-
-            {/* Preferences Menu */}
-            <View style={styles.menuContainer}>
-                <MenuItem
-                    icon="book-outline"
-                    title="Reading Preferences"
-                    subtitle={t("account.subtitles.readingPreferences")}
-                    onPress={() => console.log("Navigate to preferences")}
-                />
-
-                <MenuItem
-                    icon="notifications-outline"
-                    title={t("account.menu.notifications")}
-                    subtitle={t("account.subtitles.orderUpdates")}
-                    onPress={() => console.log("Navigate to notifications")}
+                    onPress={() => router.push("/add-address")}
                 />
             </View>
 

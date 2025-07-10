@@ -66,6 +66,20 @@ export default function RootLayout() {
                                         presentation: "modal",
                                     }}
                                 />
+                                <Stack.Screen
+                                    name="checkout"
+                                    options={{
+                                        headerShown: false,
+                                        presentation: "modal",
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name="add-address"
+                                    options={{
+                                        headerShown: false,
+                                        presentation: "modal",
+                                    }}
+                                />
                             </Stack>
                         </UserProvider>
                     </QueryProvider>

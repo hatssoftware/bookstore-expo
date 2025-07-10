@@ -92,6 +92,7 @@
     },
     "total": "Celkem",
     "checkout": "Pokračovat k platbě",
+    "continueToCheckout": "Pokračovat k pokladně",
     "quantity": "Množství",
     "remove": "Odstranit"
   },
@@ -114,6 +115,109 @@
       "shipped": "Odesláno",
       "delivered": "Doručeno",
       "cancelled": "Zrušeno"
+    }
+  },
+  "checkout": {
+    "title": "Pokladna",
+    "steps": {
+      "shipping": "Doručení",
+      "payment": "Platba",
+      "review": "Přehled"
+    },
+    "shipping": {
+      "title": "Dodací adresa",
+      "selectAddress": "Vyberte adresu",
+      "addNewAddress": "Přidat novou adresu",
+      "noAddresses": "Žádné uložené adresy",
+      "noAddressesDescription": "Přidejte dodací adresu pro pokračování v objednávce."
+    },
+    "payment": {
+      "title": "Způsob platby",
+      "selectMethod": "Vyberte způsob platby",
+      "dobírka": "Dobírka",
+      "dobírkaDesc": "Zaplatíte při převzetí objednávky",
+      "dobírkaFee": "+ 50 Kč",
+      "bankTransfer": "Bankovní převod",
+      "bankTransferDesc": "Převod peněz na náš bankovní účet",
+      "bankTransferFee": "Zdarma",
+      "onlineCard": "Online platba kartou",
+      "onlineCardDesc": "Bezpečná platba kreditní/debetní kartou",
+      "onlineCardFee": "+ 16 Kč"
+    },
+    "agreement": {
+      "title": "Souhlas se zpracováním údajů",
+      "text": "Souhlasím se zpracováním osobních údajů v souladu se zásadami ochrany osobních údajů.",
+      "required": "Pro pokračování musíte souhlasit se zpracováním údajů."
+    },
+    "summary": {
+      "title": "Shrnutí objednávky",
+      "subtotal": "Mezisoučet",
+      "shippingFee": "Poplatky za doručení",
+      "paymentFee": "Poplatek za platbu",
+      "total": "Celkem"
+    },
+    "buttons": {
+      "continue": "Pokračovat",
+      "back": "Zpět",
+      "completeOrder": "Dokončit objednávku",
+      "processing": "Zpracovává se..."
+    },
+    "errors": {
+      "noAddress": "Vyberte prosím dodací adresu",
+      "noPayment": "Vyberte prosím způsob platby",
+      "noAgreement": "Prosím souhlaste se zpracováním údajů",
+      "orderFailed": "Nepodařilo se vytvořit objednávku. Zkuste to znovu."
+    },
+    "success": {
+      "title": "Objednávka úspěšně vytvořena!",
+      "message": "Vaše objednávka byla vytvořena a brzy obdržíte potvrzovací e-mail.",
+      "orderNumber": "Číslo objednávky: {orderNumber}",
+      "viewOrders": "Zobrazit objednávky"
+    }
+  },
+  "addAddress": {
+    "title": "Přidat adresu",
+    "form": {
+      "firstName": "Jméno",
+      "firstNamePlaceholder": "Zadejte své jméno",
+      "lastName": "Příjmení",
+      "lastNamePlaceholder": "Zadejte své příjmení",
+      "company": "Společnost (Volitelné)",
+      "companyPlaceholder": "Zadejte název společnosti",
+      "country": "Země",
+      "countryPlaceholder": "Vyberte zemi",
+      "state": "Stát/Kraj (Volitelné)",
+      "statePlaceholder": "Zadejte stát nebo kraj",
+      "city": "Město",
+      "cityPlaceholder": "Zadejte město",
+      "street": "Ulice",
+      "streetPlaceholder": "Zadejte adresu ulice",
+      "postalCode": "PSČ",
+      "postalCodePlaceholder": "Zadejte PSČ",
+      "phoneNumber": "Telefonní číslo (Volitelné)",
+      "phoneNumberPlaceholder": "Zadejte telefonní číslo",
+      "setAsDefault": "Nastavit jako výchozí adresu"
+    },
+    "buttons": {
+      "save": "Uložit adresu",
+      "saving": "Ukládání...",
+      "cancel": "Zrušit"
+    },
+    "validation": {
+      "firstNameRequired": "Jméno je povinné",
+      "lastNameRequired": "Příjmení je povinné",
+      "countryRequired": "Země je povinná",
+      "cityRequired": "Město je povinné",
+      "streetRequired": "Adresa ulice je povinná",
+      "postalCodeRequired": "PSČ je povinné"
+    },
+    "success": {
+      "title": "Adresa přidána",
+      "message": "Vaše adresa byla úspěšně uložena."
+    },
+    "error": {
+      "title": "Chyba",
+      "message": "Nepodařilo se uložit adresu. Zkuste to znovu."
     }
   },
   "favorites": {

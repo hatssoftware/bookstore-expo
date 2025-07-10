@@ -71,6 +71,7 @@
   },
   "cart": {
     "title": "Cart",
+    "items": "items",
     "empty": {
       "title": "Your cart is empty",
       "description": "Browse our collection and add some books to your cart.",
@@ -91,6 +92,7 @@
     },
     "total": "Total",
     "checkout": "Checkout",
+    "continueToCheckout": "Continue to Checkout",
     "quantity": "Quantity",
     "remove": "Remove"
   },
@@ -113,6 +115,109 @@
       "shipped": "Shipped",
       "delivered": "Delivered",
       "cancelled": "Cancelled"
+    }
+  },
+  "checkout": {
+    "title": "Checkout",
+    "steps": {
+      "shipping": "Shipping",
+      "payment": "Payment",
+      "review": "Review"
+    },
+    "shipping": {
+      "title": "Shipping Address",
+      "selectAddress": "Select Address",
+      "addNewAddress": "Add New Address",
+      "noAddresses": "No saved addresses",
+      "noAddressesDescription": "Add a shipping address to continue with your order."
+    },
+    "payment": {
+      "title": "Payment Method",
+      "selectMethod": "Select Payment Method",
+      "dobírka": "Cash on Delivery",
+      "dobírkaDesc": "Pay when you receive your order",
+      "dobírkaFee": "+ 50 CZK",
+      "bankTransfer": "Bank Transfer",
+      "bankTransferDesc": "Transfer money to our bank account",
+      "bankTransferFee": "Free",
+      "onlineCard": "Online Card Payment",
+      "onlineCardDesc": "Pay securely with your credit/debit card",
+      "onlineCardFee": "+ 16 CZK"
+    },
+    "agreement": {
+      "title": "Data Processing Agreement",
+      "text": "I agree to the processing of my personal data in accordance with the privacy policy.",
+      "required": "You must agree to data processing to continue."
+    },
+    "summary": {
+      "title": "Order Summary",
+      "subtotal": "Subtotal",
+      "shippingFee": "Shipping Fee",
+      "paymentFee": "Payment Fee",
+      "total": "Total"
+    },
+    "buttons": {
+      "continue": "Continue",
+      "back": "Back",
+      "completeOrder": "Complete Order",
+      "processing": "Processing..."
+    },
+    "errors": {
+      "noAddress": "Please select a shipping address",
+      "noPayment": "Please select a payment method",
+      "noAgreement": "Please agree to data processing",
+      "orderFailed": "Failed to create order. Please try again."
+    },
+    "success": {
+      "title": "Order Placed Successfully!",
+      "message": "Your order has been placed and you will receive a confirmation email shortly.",
+      "orderNumber": "Order Number: {{orderNumber}}",
+      "viewOrders": "View Orders"
+    }
+  },
+  "addAddress": {
+    "title": "Add Address",
+    "form": {
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Enter your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Enter your last name",
+      "company": "Company (Optional)",
+      "companyPlaceholder": "Enter company name",
+      "country": "Country",
+      "countryPlaceholder": "Select country",
+      "state": "State/Province (Optional)",
+      "statePlaceholder": "Enter state or province",
+      "city": "City",
+      "cityPlaceholder": "Enter city",
+      "street": "Street Address",
+      "streetPlaceholder": "Enter street address",
+      "postalCode": "Postal Code",
+      "postalCodePlaceholder": "Enter postal code",
+      "phoneNumber": "Phone Number (Optional)",
+      "phoneNumberPlaceholder": "Enter phone number",
+      "setAsDefault": "Set as default address"
+    },
+    "buttons": {
+      "save": "Save Address",
+      "saving": "Saving...",
+      "cancel": "Cancel"
+    },
+    "validation": {
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "countryRequired": "Country is required",
+      "cityRequired": "City is required",
+      "streetRequired": "Street address is required",
+      "postalCodeRequired": "Postal code is required"
+    },
+    "success": {
+      "title": "Address Added",
+      "message": "Your address has been saved successfully."
+    },
+    "error": {
+      "title": "Error",
+      "message": "Failed to save address. Please try again."
     }
   },
   "favorites": {

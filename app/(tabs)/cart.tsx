@@ -15,7 +15,6 @@ import { useAppTheme } from "../../contexts/ThemeContext";
 import { useUser } from "../../contexts/UserContext";
 import {
     useCart,
-    useCheckout,
     useClearCart,
     useRemoveFromCart,
     useShippingAddresses,
@@ -32,9 +31,6 @@ export default function CartScreen() {
     const updateCartItemMutation = useUpdateCartItem();
     const removeFromCartMutation = useRemoveFromCart();
     const clearCartMutation = useClearCart();
-    const checkoutMutation = useCheckout();
-
-    const defaultAddress = addresses?.find((addr) => addr.isDefault);
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat("cs-CZ", {
@@ -63,13 +59,9 @@ export default function CartScreen() {
         clearCartMutation.mutate();
     };
 
-    const handleCheckout = () => {
+    const handleContinueToCheckout = () => {
         if (!cart || cart.items.length === 0) return;
-
-        checkoutMutation.mutate({
-            shippingAddressId: defaultAddress?.id || "",
-            paymentMethod: "card", // Default payment method
-        });
+        router.push("/checkout");
     };
 
     const renderCartItem = ({ item }: { item: CartItem }) => (
@@ -414,8 +406,7 @@ export default function CartScreen() {
                         styles.checkoutButton,
                         { backgroundColor: theme.colors.primary },
                     ]}
-                    onPress={handleCheckout}
-                    disabled={checkoutMutation.isPending}
+                    onPress={handleContinueToCheckout}
                 >
                     <Text
                         style={[
@@ -426,9 +417,7 @@ export default function CartScreen() {
                             },
                         ]}
                     >
-                        {checkoutMutation.isPending
-                            ? t("cart.processingCheckout")
-                            : t("cart.checkout")}
+                        {t("cart.continueToCheckout")}
                     </Text>
                 </TouchableOpacity>
             </View>

@@ -71,6 +71,7 @@
   },
   "cart": {
     "title": "Carrito",
+    "items": "artículos",
     "empty": {
       "title": "Tu carrito está vacío",
       "description": "Explora nuestra colección y añade algunos libros a tu carrito.",
@@ -91,6 +92,7 @@
     },
     "total": "Total",
     "checkout": "Finalizar Compra",
+    "continueToCheckout": "Continuar a Compra",
     "quantity": "Cantidad",
     "remove": "Eliminar"
   },
@@ -113,6 +115,109 @@
       "shipped": "Enviado",
       "delivered": "Entregado",
       "cancelled": "Cancelado"
+    }
+  },
+  "checkout": {
+    "title": "Compra",
+    "steps": {
+      "shipping": "Envío",
+      "payment": "Pago",
+      "review": "Revisar"
+    },
+    "shipping": {
+      "title": "Dirección de Envío",
+      "selectAddress": "Seleccionar Dirección",
+      "addNewAddress": "Agregar Nueva Dirección",
+      "noAddresses": "No hay direcciones guardadas",
+      "noAddressesDescription": "Agrega una dirección de envío para continuar con tu pedido."
+    },
+    "payment": {
+      "title": "Método de Pago",
+      "selectMethod": "Seleccionar Método de Pago",
+      "dobírka": "Pago Contra Entrega",
+      "dobírkaDesc": "Paga cuando recibas tu pedido",
+      "dobírkaFee": "+ 50 CZK",
+      "bankTransfer": "Transferencia Bancaria",
+      "bankTransferDesc": "Transfiere dinero a nuestra cuenta bancaria",
+      "bankTransferFee": "Gratis",
+      "onlineCard": "Pago en Línea con Tarjeta",
+      "onlineCardDesc": "Paga de forma segura con tu tarjeta de crédito/débito",
+      "onlineCardFee": "+ 16 CZK"
+    },
+    "agreement": {
+      "title": "Acuerdo de Procesamiento de Datos",
+      "text": "Acepto el procesamiento de mis datos personales de acuerdo con la política de privacidad.",
+      "required": "Debes aceptar el procesamiento de datos para continuar."
+    },
+    "summary": {
+      "title": "Resumen del Pedido",
+      "subtotal": "Subtotal",
+      "shippingFee": "Tarifa de Envío",
+      "paymentFee": "Tarifa de Pago",
+      "total": "Total"
+    },
+    "buttons": {
+      "continue": "Continuar",
+      "back": "Atrás",
+      "completeOrder": "Completar Pedido",
+      "processing": "Procesando..."
+    },
+    "errors": {
+      "noAddress": "Por favor selecciona una dirección de envío",
+      "noPayment": "Por favor selecciona un método de pago",
+      "noAgreement": "Por favor acepta el procesamiento de datos",
+      "orderFailed": "Error al crear el pedido. Inténtalo de nuevo."
+    },
+    "success": {
+      "title": "¡Pedido Realizado Exitosamente!",
+      "message": "Tu pedido ha sido realizado y recibirás un correo de confirmación en breve.",
+      "orderNumber": "Número de Pedido: {orderNumber}",
+      "viewOrders": "Ver Pedidos"
+    }
+  },
+  "addAddress": {
+    "title": "Agregar dirección",
+    "form": {
+      "firstName": "Nombre",
+      "firstNamePlaceholder": "Ingrese su nombre",
+      "lastName": "Apellido",
+      "lastNamePlaceholder": "Ingrese su apellido",
+      "company": "Empresa (Opcional)",
+      "companyPlaceholder": "Ingrese nombre de la empresa",
+      "country": "País",
+      "countryPlaceholder": "Seleccione país",
+      "state": "Estado/Provincia (Opcional)",
+      "statePlaceholder": "Ingrese estado o provincia",
+      "city": "Ciudad",
+      "cityPlaceholder": "Ingrese ciudad",
+      "street": "Dirección",
+      "streetPlaceholder": "Ingrese dirección de la calle",
+      "postalCode": "Código postal",
+      "postalCodePlaceholder": "Ingrese código postal",
+      "phoneNumber": "Número de teléfono (Opcional)",
+      "phoneNumberPlaceholder": "Ingrese número de teléfono",
+      "setAsDefault": "Establecer como dirección predeterminada"
+    },
+    "buttons": {
+      "save": "Guardar dirección",
+      "saving": "Guardando...",
+      "cancel": "Cancelar"
+    },
+    "validation": {
+      "firstNameRequired": "El nombre es obligatorio",
+      "lastNameRequired": "El apellido es obligatorio",
+      "countryRequired": "El país es obligatorio",
+      "cityRequired": "La ciudad es obligatoria",
+      "streetRequired": "La dirección es obligatoria",
+      "postalCodeRequired": "El código postal es obligatorio"
+    },
+    "success": {
+      "title": "Dirección agregada",
+      "message": "Su dirección se ha guardado exitosamente."
+    },
+    "error": {
+      "title": "Error",
+      "message": "No se pudo guardar la dirección. Inténtelo de nuevo."
     }
   },
   "favorites": {

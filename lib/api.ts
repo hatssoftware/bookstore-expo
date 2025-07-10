@@ -101,9 +101,37 @@ export interface Order {
     orderNumber: string;
     date: string;
     status: string;
-    totalPrice: number;
+    totalPrice: string;
     shippingAddress?: any;
     orderItems?: any[];
+}
+
+// Payment method types
+export type PaymentMethod = "dobírka" | "bankTransfer" | "onlineCard";
+
+export interface PaymentMethodInfo {
+    key: PaymentMethod;
+    name: string;
+    description: string;
+    fee: number;
+    isFree: boolean;
+}
+
+// Checkout types
+export interface CheckoutRequest {
+    shippingAddressId: string;
+    paymentMethod: PaymentMethod;
+}
+
+export interface CheckoutResponse {
+    success: boolean;
+    order: {
+        id: string;
+        orderNumber: string;
+        date: string;
+        status: string;
+        totalPrice: number;
+    };
 }
 
 // Address types
@@ -348,6 +376,37 @@ class ApiClient {
 // Create API client instance
 export const apiClient = new ApiClient(BASE_URL);
 
+// Payment method helpers
+export const getPaymentMethods = (): PaymentMethodInfo[] => [
+    {
+        key: "dobírka",
+        name: "Cash on Delivery",
+        description: "Pay when you receive your order",
+        fee: 50,
+        isFree: false,
+    },
+    {
+        key: "bankTransfer",
+        name: "Bank Transfer",
+        description: "Transfer money to our bank account",
+        fee: 0,
+        isFree: true,
+    },
+    {
+        key: "onlineCard",
+        name: "Online Card Payment",
+        description: "Pay securely with your credit/debit card",
+        fee: 16,
+        isFree: false,
+    },
+];
+
+export const getPaymentMethodInfo = (
+    key: PaymentMethod
+): PaymentMethodInfo | undefined => {
+    return getPaymentMethods().find((method) => method.key === key);
+};
+
 // API functions
 
 // Auth API
@@ -502,7 +561,7 @@ export const ordersApi = {
         apiClient.get(`/orders/${orderId}`),
 
     // Process checkout
-    checkout: (data: { shippingAddressId: string; paymentMethod: string }) =>
+    checkout: (data: CheckoutRequest): Promise<CheckoutResponse> =>
         apiClient.post("/checkout", data),
 };
 

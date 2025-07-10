@@ -12,8 +12,8 @@ import {
     View,
 } from "react-native";
 import { useAppTheme } from "../../contexts/ThemeContext";
-import { useOrders } from "../../hooks/useApi";
 import { useUser } from "../../contexts/UserContext";
+import { useOrders } from "../../hooks/useApi";
 import { Order } from "../../lib/api";
 
 export default function OrdersScreen() {
@@ -22,8 +22,9 @@ export default function OrdersScreen() {
     const { user, isAuthenticated } = useUser();
     const { data: orders, isLoading, refetch, error } = useOrders();
 
-    const formatPrice = (price: number) => {
-        return `${price.toFixed(2)} CZK`;
+    const formatPrice = (price: number | string) => {
+        const numPrice = typeof price === "string" ? parseFloat(price) : price;
+        return `${numPrice.toFixed(2)} CZK`;
     };
 
     const formatDate = (dateString: string) => {
@@ -66,12 +67,9 @@ export default function OrdersScreen() {
     };
 
     const renderOrder = (order: Order) => (
-        <TouchableOpacity
+        <View
             key={order.id}
             style={[styles.orderCard, { backgroundColor: theme.colors.card }]}
-            onPress={() => {
-                console.log("Navigate to order details:", order.id);
-            }}
         >
             <View style={styles.orderHeader}>
                 <View style={styles.orderInfo}>
@@ -126,13 +124,9 @@ export default function OrdersScreen() {
                     {formatPrice(order.totalPrice)}
                 </Text>
 
-                <Ionicons
-                    name="chevron-forward"
-                    size={20}
-                    color={theme.colors.gray400}
-                />
+               
             </View>
-        </TouchableOpacity>
+        </View>
     );
 
     // Show sign in prompt for non-authenticated users
