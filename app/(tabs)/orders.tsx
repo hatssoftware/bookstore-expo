@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import React from "react";
 import {
     RefreshControl,
+    SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
@@ -123,8 +124,6 @@ export default function OrdersScreen() {
                 >
                     {formatPrice(order.totalPrice)}
                 </Text>
-
-               
             </View>
         </View>
     );
@@ -132,12 +131,27 @@ export default function OrdersScreen() {
     // Show sign in prompt for non-authenticated users
     if (!isAuthenticated || !user) {
         return (
-            <View
+            <SafeAreaView
                 style={[
                     styles.container,
                     { backgroundColor: theme.colors.background },
                 ]}
             >
+                {/* Header */}
+                <View style={styles.header}>
+                    <Text
+                        style={[
+                            styles.headerTitle,
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
+                        ]}
+                    >
+                        {t("orders.title")}
+                    </Text>
+                </View>
+
                 <View style={styles.emptyStateContainer}>
                     <Ionicons
                         name="receipt-outline"
@@ -180,19 +194,34 @@ export default function OrdersScreen() {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </SafeAreaView>
         );
     }
 
     // Show loading state
     if (isLoading) {
         return (
-            <View
+            <SafeAreaView
                 style={[
                     styles.container,
                     { backgroundColor: theme.colors.background },
                 ]}
             >
+                {/* Header */}
+                <View style={styles.header}>
+                    <Text
+                        style={[
+                            styles.headerTitle,
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
+                        ]}
+                    >
+                        {t("orders.title")}
+                    </Text>
+                </View>
+
                 <View style={styles.loadingContainer}>
                     <Text
                         style={[
@@ -203,7 +232,7 @@ export default function OrdersScreen() {
                         {t("orders.loading")}
                     </Text>
                 </View>
-            </View>
+            </SafeAreaView>
         );
     }
 
@@ -219,12 +248,27 @@ export default function OrdersScreen() {
         }
 
         return (
-            <View
+            <SafeAreaView
                 style={[
                     styles.container,
                     { backgroundColor: theme.colors.background },
                 ]}
             >
+                {/* Header */}
+                <View style={styles.header}>
+                    <Text
+                        style={[
+                            styles.headerTitle,
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
+                        ]}
+                    >
+                        {t("orders.title")}
+                    </Text>
+                </View>
+
                 <View style={styles.errorContainer}>
                     <Ionicons
                         name="alert-circle-outline"
@@ -266,19 +310,34 @@ export default function OrdersScreen() {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </SafeAreaView>
         );
     }
 
     // Show empty state
     if (!orders || orders.length === 0) {
         return (
-            <View
+            <SafeAreaView
                 style={[
                     styles.container,
                     { backgroundColor: theme.colors.background },
                 ]}
             >
+                {/* Header */}
+                <View style={styles.header}>
+                    <Text
+                        style={[
+                            styles.headerTitle,
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
+                        ]}
+                    >
+                        {t("orders.title")}
+                    </Text>
+                </View>
+
                 <View style={styles.emptyStateContainer}>
                     <Ionicons
                         name="receipt-outline"
@@ -322,25 +381,41 @@ export default function OrdersScreen() {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </SafeAreaView>
         );
     }
 
     return (
-        <View
+        <SafeAreaView
             style={[
                 styles.container,
                 { backgroundColor: theme.colors.background },
             ]}
         >
+            {/* Header */}
             <View style={styles.header}>
                 <Text
                     style={[
-                        styles.orderCount,
-                        { color: theme.colors.textSecondary },
+                        styles.headerTitle,
+                        {
+                            color: theme.colors.text,
+                            fontFamily: theme.typography.fontFamily.bold,
+                        },
                     ]}
                 >
-                    {orders.length} {orders.length === 1 ? "order" : "orders"}
+                    {t("orders.title")}
+                </Text>
+                <Text
+                    style={[
+                        styles.itemCount,
+                        {
+                            color: theme.colors.textSecondary,
+                            fontFamily: theme.typography.fontFamily.regular,
+                        },
+                    ]}
+                >
+                    {orders.length}{" "}
+                    {orders.length === 1 ? t("orders.item") : t("orders.items")}
                 </Text>
             </View>
 
@@ -356,7 +431,7 @@ export default function OrdersScreen() {
             >
                 {orders.map(renderOrder)}
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -365,14 +440,20 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        paddingHorizontal: 16,
-        paddingVertical: 12,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingHorizontal: 20,
+        paddingVertical: 16,
         borderBottomWidth: 1,
         borderBottomColor: "#e5e7eb",
     },
-    orderCount: {
+    headerTitle: {
+        fontSize: 24,
+    },
+    itemCount: {
         fontSize: 14,
-        fontWeight: "500",
+        fontWeight: "600",
     },
     ordersList: {
         flex: 1,

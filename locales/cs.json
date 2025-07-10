@@ -115,7 +115,9 @@
       "shipped": "Odesláno",
       "delivered": "Doručeno",
       "cancelled": "Zrušeno"
-    }
+    },
+    "items": "objednávky",
+    "item": "objednávka"
   },
   "checkout": {
     "title": "Pokladna",
@@ -231,7 +233,9 @@
       "title": "Přihlaste se pro zobrazení oblíbených",
       "description": "Vytvořte si účet nebo se přihlaste pro uložení oblíbených knih a přístup k nim z jakéhokoli zařízení.",
       "signInButton": "Přihlásit se"
-    }
+    },  
+    "items": "položky",
+    "item": "položka"
   },
   "book": {
     "addToCart": "Přidat do košíku",

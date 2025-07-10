@@ -75,7 +75,7 @@
     "empty": {
       "title": "Your cart is empty",
       "description": "Browse our collection and add some books to your cart.",
-      "exploreButton": "Explore Books"
+      "browseButton": "Browse Books"
     },
     "signIn": {
       "title": "Sign in to view cart",
@@ -231,7 +231,9 @@
       "title": "Sign in to view favorites",
       "description": "Create an account or sign in to save your favorite books and access them from any device.",
       "signInButton": "Sign In"
-    }
+    },
+    "items": "items",
+    "item": "item"
   },
   "book": {
     "addToCart": "Add to Cart",

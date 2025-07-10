@@ -5,6 +5,7 @@ import React from "react";
 import {
     FlatList,
     RefreshControl,
+    SafeAreaView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -90,12 +91,27 @@ export default function FavoritesScreen() {
     // Show sign in prompt for non-authenticated users
     if (!isAuthenticated || !user) {
         return (
-            <View
+            <SafeAreaView
                 style={[
                     styles.container,
                     { backgroundColor: theme.colors.background },
                 ]}
             >
+                {/* Header */}
+                <View style={styles.header}>
+                    <Text
+                        style={[
+                            styles.headerTitle,
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
+                        ]}
+                    >
+                        {t("favorites.title")}
+                    </Text>
+                </View>
+
                 <View style={styles.emptyStateContainer}>
                     <Ionicons
                         name="heart-outline"
@@ -138,19 +154,34 @@ export default function FavoritesScreen() {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </SafeAreaView>
         );
     }
 
     // Show loading state
     if (isLoading) {
         return (
-            <View
+            <SafeAreaView
                 style={[
                     styles.container,
                     { backgroundColor: theme.colors.background },
                 ]}
             >
+                {/* Header */}
+                <View style={styles.header}>
+                    <Text
+                        style={[
+                            styles.headerTitle,
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
+                        ]}
+                    >
+                        {t("favorites.title")}
+                    </Text>
+                </View>
+
                 <View style={styles.loadingContainer}>
                     <Text
                         style={[
@@ -161,7 +192,7 @@ export default function FavoritesScreen() {
                         Loading favorites...
                     </Text>
                 </View>
-            </View>
+            </SafeAreaView>
         );
     }
 
@@ -177,12 +208,27 @@ export default function FavoritesScreen() {
         }
 
         return (
-            <View
+            <SafeAreaView
                 style={[
                     styles.container,
                     { backgroundColor: theme.colors.background },
                 ]}
             >
+                {/* Header */}
+                <View style={styles.header}>
+                    <Text
+                        style={[
+                            styles.headerTitle,
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
+                        ]}
+                    >
+                        {t("favorites.title")}
+                    </Text>
+                </View>
+
                 <View style={styles.errorContainer}>
                     <Ionicons
                         name="alert-circle-outline"
@@ -224,19 +270,34 @@ export default function FavoritesScreen() {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </SafeAreaView>
         );
     }
 
     // Show empty state
     if (!favorites || favorites.length === 0) {
         return (
-            <View
+            <SafeAreaView
                 style={[
                     styles.container,
                     { backgroundColor: theme.colors.background },
                 ]}
             >
+                {/* Header */}
+                <View style={styles.header}>
+                    <Text
+                        style={[
+                            styles.headerTitle,
+                            {
+                                color: theme.colors.text,
+                                fontFamily: theme.typography.fontFamily.bold,
+                            },
+                        ]}
+                    >
+                        {t("favorites.title")}
+                    </Text>
+                </View>
+
                 <View style={styles.emptyStateContainer}>
                     <Ionicons
                         name="heart-outline"
@@ -280,26 +341,41 @@ export default function FavoritesScreen() {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </SafeAreaView>
         );
     }
 
     return (
-        <View
+        <SafeAreaView
             style={[
                 styles.container,
                 { backgroundColor: theme.colors.background },
             ]}
         >
+            {/* Header */}
             <View style={styles.header}>
                 <Text
                     style={[
-                        styles.favoriteCount,
-                        { color: theme.colors.textSecondary },
+                        styles.headerTitle,
+                        {
+                            color: theme.colors.text,
+                            fontFamily: theme.typography.fontFamily.bold,
+                        },
+                    ]}
+                >
+                    {t("favorites.title")}
+                </Text>
+                <Text
+                    style={[
+                        styles.itemCount,
+                        {
+                            color: theme.colors.textSecondary,
+                            fontFamily: theme.typography.fontFamily.regular,
+                        },
                     ]}
                 >
                     {favorites.length}{" "}
-                    {favorites.length === 1 ? "book" : "books"}
+                    {favorites.length === 1 ? t("favorites.item") : t("favorites.items")}
                 </Text>
             </View>
 
@@ -317,7 +393,7 @@ export default function FavoritesScreen() {
                 }
                 showsVerticalScrollIndicator={false}
             />
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -326,14 +402,20 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        paddingHorizontal: 16,
-        paddingVertical: 12,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingHorizontal: 20,
+        paddingVertical: 16,
         borderBottomWidth: 1,
         borderBottomColor: "#e5e7eb",
     },
-    favoriteCount: {
+    headerTitle: {
+        fontSize: 24,
+    },
+    itemCount: {
         fontSize: 14,
-        fontWeight: "500",
+        fontWeight: "600",
     },
     booksList: {
         padding: 16,
